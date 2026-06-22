@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Message envoyé — B10 Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+.merci-wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 40px 24px; text-align: center;
+}
+.merci-box { max-width: 560px; }
+.merci-icon {
+  width: 64px; height: 64px; border: 1px solid var(--gold);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 32px; font-size: 24px;
+}
+.merci-title {
+  font-family: var(--font-display); font-size: clamp(36px,5vw,56px);
+  font-weight: 300; color: var(--white); margin-bottom: 16px; line-height: 1.1;
+}
+.merci-title em { font-style: italic; color: var(--gold); }
+.merci-sub {
+  font-size: 15px; font-weight: 300;
+  color: rgba(242,240,235,0.6); line-height: 1.8; margin-bottom: 40px;
+}
+.merci-line { width: 40px; height: 1px; background: var(--gold); margin: 0 auto 32px; }
+</style>
+</head>
+<body>
+<nav id="navbar" style="background:rgba(13,13,13,0.96);border-bottom:1px solid var(--border);">
+  <a href="index.html" class="nav-logo"><span class="nav-logo-text"><span class="gold">B</span>10 Architecture &amp; Design</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#bureau">Bureau</a></li>
+    <li><a href="index.html#projets">Projets</a></li>
+    <li><a href="index.html#equipe">Équipe</a></li>
+    <li><a href="index.html#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="merci-wrap">
+  <div class="merci-box">
+    <div class="merci-icon" style="color:var(--gold);">✓</div>
+    <div class="merci-line"></div>
+    <h1 class="merci-title">Message<br><em>bien reçu</em></h1>
+    <p class="merci-sub">
+      Merci pour votre message. L'équipe B10 Architecture &amp; Design vous répondra dans les plus brefs délais.<br><br>
+      En attendant, n'hésitez pas à découvrir nos dernières réalisations.
+    </p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="index.html#projets" class="btn btn-primary">Voir nos projets</a>
+      <a href="index.html" class="btn btn-outline">Retour à l'accueil</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

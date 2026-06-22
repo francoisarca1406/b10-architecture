@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Habitations unifamiliales — B10 Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<style>
+.cat-hero{height:65vh;min-height:420px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:0 48px 60px;margin-top:72px;}
+.cat-hero-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1800&q=90') center/cover no-repeat;transform:scale(1.04);transition:transform 8s ease;opacity:0.5;}
+.cat-hero-bg.loaded{transform:scale(1);}
+.cat-hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,13,13,0.2),rgba(13,13,13,0.92));}
+.cat-hero-content{position:relative;z-index:1;max-width:700px;}
+.cat-num{font-family:var(--font-display);font-size:120px;font-weight:300;color:rgba(242,240,235,0.06);position:absolute;right:48px;bottom:40px;line-height:1;}
+.cat-project-card{display:block;text-decoration:none;position:relative;overflow:hidden;background:var(--dark);border:1px solid var(--border);transition:border-color 0.3s;}
+.cat-project-card:hover{border-color:var(--gold);}
+.cat-project-img{aspect-ratio:16/9;overflow:hidden;}
+.cat-project-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;}
+.cat-project-card:hover .cat-project-img img{transform:scale(1.05);}
+.cat-project-body{padding:20px 24px;}
+.cat-project-title{font-family:var(--font-display);font-size:22px;font-weight:400;color:var(--white);margin-bottom:6px;line-height:1.2;}
+.cat-project-loc{font-family:var(--font-label);font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.cat-project-line{height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);}
+.cat-project-card:hover .cat-project-line{transform:scaleX(1);}
+.other-cats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.other-cat-link{display:block;text-decoration:none;padding:28px 24px;background:var(--dark);border:1px solid var(--border);transition:border-color 0.3s,background 0.3s;}
+.other-cat-link:hover{border-color:var(--gold);background:rgba(245,166,35,0.03);}
+.other-cat-num{font-family:var(--font-label);font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px;}
+.other-cat-name{font-family:var(--font-display);font-size:22px;font-weight:300;color:var(--white);}
+.other-cat-arrow{color:var(--gold);margin-top:12px;font-size:16px;display:block;transition:transform 0.25s;}
+.other-cat-link:hover .other-cat-arrow{transform:translateX(6px);}
+@media(max-width:900px){.cat-hero{height:55vh;padding:0 20px 40px;}.cat-num{font-size:80px;right:20px;}.other-cats{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.other-cats{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<nav id="navbar">
+  <a href="../index.html" class="nav-logo"><span class="nav-logo-text"><span class="gold">B</span>10 Architecture &amp; Design</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html#bureau">Bureau</a></li>
+    <li><a href="../index.html#projets" class="active">Projets</a></li>
+    <li><a href="../index.html#equipe">Équipe</a></li>
+    <li><a href="../index.html#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</nav>
+<div class="cat-hero">
+  <div class="cat-hero-bg" id="heroBg"></div>
+  <div class="cat-hero-overlay"></div>
+  <div class="cat-hero-content sr">
+    <a href="../index.html#categories" class="back-link">Toutes les typologies</a>
+    <div class="page-subtitle">03 — Expertise B10</div>
+    <h1 class="page-title"><em>Habitations unifamiliales</em></h1>
+    <p style="font-size:15px;font-weight:300;color:rgba(242,240,235,0.55);margin-top:16px;max-width:560px;">Maisons sur mesure qui reflètent la personnalité de chaque famille. Du projet passif au design contemporain affirmé, chaque habitation est une réponse unique à un mode de vie singulier.</p>
+  </div>
+  <div class="cat-num">03</div>
+</div>
+<div class="section">
+  <div class="section-label">Réalisations</div>
+  <h2 class="section-title">2 projets dans cette catégorie</h2>
+  <div class="grid-3 sr-stagger">
+    <a href="../projets/villa-vise.html" class="cat-project-card">
+      <div class="cat-project-img"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80" alt="Villa contemporaine à Visé" loading="eager"></div>
+      <div class="cat-project-body">
+        <div class="cat-project-title">Villa contemporaine à Visé</div>
+        <div class="cat-project-loc">Visé · 2023</div>
+      </div>
+      <div class="cat-project-line"></div>
+    </a>
+    <a href="../projets/maison-dalhem.html" class="cat-project-card">
+      <div class="cat-project-img"><img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Maison passive à Dalhem" loading="eager"></div>
+      <div class="cat-project-body">
+        <div class="cat-project-title">Maison passive à Dalhem</div>
+        <div class="cat-project-loc">Dalhem · 2022</div>
+      </div>
+      <div class="cat-project-line"></div>
+    </a>
+  </div>
+</div>
+<div class="section" style="background:var(--dark);border-top:1px solid var(--border);">
+  <div class="section-label">Explorer</div>
+  <h2 class="section-title">Autres typologies</h2>
+  <div class="other-cats sr-stagger">
+    <a href="halls-industriels.html" class="other-cat-link"><div class="other-cat-num">01</div><div class="other-cat-name">Halls industriels</div><span class="other-cat-arrow">→</span></a>
+    <a href="bureaux.html" class="other-cat-link"><div class="other-cat-num">02</div><div class="other-cat-name">Bureaux</div><span class="other-cat-arrow">→</span></a>
+    <a href="habitations-unifamiliales.html" class="other-cat-link"><div class="other-cat-num">03</div><div class="other-cat-name">Habitations unifamiliales</div><span class="other-cat-arrow">→</span></a>
+    <a href="ensembles-de-logements.html" class="other-cat-link"><div class="other-cat-num">04</div><div class="other-cat-name">Ensembles de logements</div><span class="other-cat-arrow">→</span></a>
+    <a href="amenagements-interieurs.html" class="other-cat-link"><div class="other-cat-num">05</div><div class="other-cat-name">Aménagements intérieurs</div><span class="other-cat-arrow">→</span></a>
+    <a href="esquisses.html" class="other-cat-link"><div class="other-cat-num">06</div><div class="other-cat-name">Esquisses de projet</div><span class="other-cat-arrow">→</span></a>
+  </div>
+</div>
+<footer>
+  <span class="footer-copy">© 2026 B10 Architecture & Design</span>
+  <ul class="footer-links"><li><a href="#">RGPD</a></li><li><a href="#">Vie privée</a></li></ul>
+  <div class="footer-social"><a href="#">FB</a><a href="#">IG</a><a href="#">LI</a></div>
+</footer>
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;cursor.style.left=cx+'px';cursor.style.top=cy+'px';});
+function animRing(){rx+=(cx-rx)*0.12;ry+=(cy-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));});
+setTimeout(()=>document.getElementById('heroBg').classList.add('loaded'),100);
+const toggle=document.getElementById('navToggle'),nav=document.getElementById('navLinks');
+toggle.addEventListener('click',()=>{nav.classList.toggle('open');const s=toggle.querySelectorAll('span');if(nav.classList.contains('open')){s[0].style.transform='translateY(6px) rotate(45deg)';s[1].style.opacity='0';s[2].style.transform='translateY(-6px) rotate(-45deg)';}else{s.forEach(x=>{x.style.transform='';x.style.opacity='';})}});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
+document.querySelectorAll('.sr,.sr-left,.sr-stagger').forEach(el=>obs.observe(el));
+setTimeout(()=>document.querySelectorAll('.sr:not(.visible),.sr-left:not(.visible),.sr-stagger:not(.visible)').forEach(el=>el.classList.add('visible')),1000);
+</script>
+</body></html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Thomas Renard — B10 Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<style>
+.member-layout{display:grid;grid-template-columns:400px 1fr;gap:0;min-height:calc(100vh - 72px);margin-top:72px;}
+.member-photo{position:sticky;top:72px;height:calc(100vh - 72px);overflow:hidden;}
+.member-photo img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
+.member-content{padding:80px 64px;}
+.member-contact-links{display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;}
+.team-grid-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.team-mini-card{position:relative;overflow:hidden;aspect-ratio:1/1;text-decoration:none;display:block;}
+.team-mini-card img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform 0.5s ease;}
+.team-mini-card:hover img{transform:scale(1.05);}
+.team-mini-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,0.9),transparent 55%);display:flex;flex-direction:column;justify-content:flex-end;padding:14px;}
+.team-mini-name{font-family:var(--font-display);font-size:16px;font-weight:400;color:var(--white);}
+.team-mini-role{font-family:var(--font-label);font-size:9px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-top:2px;}
+.team-mini-line{position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform 0.4s ease;}
+.team-mini-card:hover .team-mini-line{transform:scaleX(1);}
+@media(max-width:900px){.member-layout{grid-template-columns:1fr;}.member-photo{position:relative;height:60vw;min-height:300px;max-height:480px;}.member-content{padding:40px 20px;}.team-grid-mini{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<nav id="navbar">
+  <a href="../index.html" class="nav-logo"><span class="nav-logo-text"><span class="gold">B</span>10 Architecture &amp; Design</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html#bureau">Bureau</a></li>
+    <li><a href="../index.html#projets">Projets</a></li>
+    <li><a href="../index.html#equipe" class="active">Équipe</a></li>
+    <li><a href="../index.html#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</nav>
+<div class="member-layout">
+  <div class="member-photo"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=800&q=80" alt="Thomas Renard" loading="eager"></div>
+  <div class="member-content">
+    <a href="../index.html#equipe" class="back-link">L'équipe</a>
+    <div class="page-subtitle" style="margin-bottom:12px;">Architecte associé — Direction</div>
+    <h1 class="page-title" style="font-size:clamp(40px,5vw,64px);">Thomas Renard</h1>
+    <div style="width:40px;height:1px;background:var(--gold);margin:24px 0;"></div>
+    <p style="font-size:16px;font-weight:300;color:rgba(242,240,235,0.65);line-height:1.85;max-width:520px;">Thomas Renard fonde B10 Architecture & Design en 2017 après 12 ans d'expérience dans des cabinets liégeois et bruxellois de renom. Diplômé de l'Université de Liège en architecture, il a développé une expertise particulière dans les projets industriels et résidentiels haut de gamme.</p>
+    <div class="member-contact-links">
+      <a href="mailto:t.renard@b10architecture.be" class="btn btn-primary">Envoyer un message</a>
+      <a href="#" class="btn btn-outline">LinkedIn</a>
+    </div>
+  </div>
+</div>
+<div class="section" style="background:var(--dark);border-top:1px solid var(--border);">
+  <div class="section-label">L'équipe</div>
+  <h2 class="section-title">Rencontrez nos architectes</h2>
+  <div class="team-grid-mini sr-stagger">
+    <a href="thomas-renard.html" class="team-mini-card"><img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" alt="Thomas Renard" loading="eager"><div class="team-mini-overlay"><div class="team-mini-name">Thomas Renard</div><div class="team-mini-role">Direction</div></div><div class="team-mini-line"></div></a>
+    <a href="sophie-marchal.html" class="team-mini-card"><img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80" alt="Sophie Marchal" loading="eager"><div class="team-mini-overlay"><div class="team-mini-name">Sophie Marchal</div><div class="team-mini-role">Architecte Projet</div></div><div class="team-mini-line"></div></a>
+    <a href="lucas-devaux.html" class="team-mini-card"><img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80" alt="Lucas Devaux" loading="eager"><div class="team-mini-overlay"><div class="team-mini-name">Lucas Devaux</div><div class="team-mini-role">Architecte Projet</div></div><div class="team-mini-line"></div></a>
+    <a href="ines-lambert.html" class="team-mini-card"><img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=80" alt="Inès Lambert" loading="eager"><div class="team-mini-overlay"><div class="team-mini-name">Inès Lambert</div><div class="team-mini-role">Chargée de mission</div></div><div class="team-mini-line"></div></a>
+  </div>
+</div>
+<footer>
+  <span class="footer-copy">© 2026 B10 Architecture & Design</span>
+  <ul class="footer-links"><li><a href="#">RGPD</a></li><li><a href="#">Vie privée</a></li></ul>
+  <div class="footer-social"><a href="#">FB</a><a href="#">IG</a><a href="#">LI</a></div>
+</footer>
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;cursor.style.left=cx+'px';cursor.style.top=cy+'px';});
+function animRing(){rx+=(cx-rx)*0.12;ry+=(cy-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));});
+const toggle=document.getElementById('navToggle'),nav=document.getElementById('navLinks');
+toggle.addEventListener('click',()=>{nav.classList.toggle('open');const s=toggle.querySelectorAll('span');if(nav.classList.contains('open')){s[0].style.transform='translateY(6px) rotate(45deg)';s[1].style.opacity='0';s[2].style.transform='translateY(-6px) rotate(-45deg)';}else{s.forEach(x=>{x.style.transform='';x.style.opacity='';})}});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:0.1});
+document.querySelectorAll('.sr,.sr-left,.sr-stagger').forEach(el=>obs.observe(el));
+setTimeout(()=>document.querySelectorAll('.sr:not(.visible),.sr-left:not(.visible),.sr-stagger:not(.visible)').forEach(el=>el.classList.add('visible')),1000);
+</script>
+</body></html>
