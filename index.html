@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>B10 Architecture & Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0D0D0D;
+  --dark: #1A1A1A;
+  --surface: #242424;
+  --border: #2E2E2E;
+  --gold: #F5A623;
+  --white: #F2F0EB;
+  --muted: #6A6A6A;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Barlow', sans-serif;
+  --font-label: 'Barlow Condensed', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+  position: fixed; top: 0; left: 0;
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+}
+
+#cursor-ring {
+  position: fixed; top: 0; left: 0;
+  width: 36px; height: 36px;
+  border: 1px solid rgba(245,166,35,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width 0.4s ease, height 0.4s ease, border-color 0.3s, transform 0.12s ease;
+}
+
+body.cursor-hover #cursor { width: 12px; height: 12px; }
+body.cursor-hover #cursor-ring { width: 56px; height: 56px; border-color: var(--gold); }
+body.cursor-link #cursor { width: 48px; height: 48px; background: transparent; border: 1px solid var(--gold); }
+body.cursor-link #cursor-ring { width: 0; height: 0; opacity: 0; }
+
+/* ── PAGE LOADER ── */
+#loader {
+  position: fixed; inset: 0; z-index: 10000;
+  background: var(--black);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 24px;
+}
+
+.loader-logo {
+  font-family: var(--font-display);
+  font-size: 48px; font-weight: 300;
+  color: var(--white); letter-spacing: 0.02em;
+  overflow: hidden;
+}
+
+.loader-logo span { color: var(--gold); }
+
+.loader-bar-wrap {
+  width: 200px; height: 1px;
+  background: var(--border);
+  position: relative; overflow: hidden;
+}
+
+.loader-bar {
+  position: absolute; top: 0; left: 0;
+  height: 100%; background: var(--gold);
+  width: 0%; transition: width 0.05s linear;
+}
+
+.loader-pct {
+  font-family: var(--font-label);
+  font-size: 11px; letter-spacing: 0.16em;
+  color: var(--muted);
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 72px;
+  background: rgba(13,13,13,0);
+  transition: background 0.5s, border-color 0.5s;
+  border-bottom: 1px solid transparent;
+}
+
+nav.scrolled {
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(16px);
+  border-bottom-color: var(--border);
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 0;
+  text-decoration: none; opacity: 0;
+  transform: translateY(-12px);
+  transition: opacity 0.6s 1.2s, transform 0.6s 1.2s;
+}
+.nav-logo.visible { opacity: 1; transform: translateY(0); }
+
+.nav-logo-text {
+  font-family: var(--font-label);
+  font-size: 30px; font-weight: 600;
+  letter-spacing: 0.08em; color: var(--white);
+}
+.nav-logo-text .gold { color: var(--gold); }
+
+.nav-links {
+  display: flex; align-items: center; gap: 36px;
+  list-style: none;
+  opacity: 0; transform: translateY(-12px);
+  transition: opacity 0.6s 1.4s, transform 0.6s 1.4s;
+}
+.nav-links.visible { opacity: 1; transform: translateY(0); }
+
+.nav-links a {
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  transition: color 0.2s; position: relative;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s;
+}
+.nav-links a:hover, .nav-links a.active { color: var(--white); }
+.nav-links a:hover::after, .nav-links a.active::after { transform: scaleX(1); }
+
+.nav-cta {
+  color: var(--black) !important;
+  background: var(--gold);
+  padding: 9px 20px;
+  transition: opacity 0.2s !important;
+}
+.nav-cta:hover { opacity: 0.85; }
+.nav-cta::after { display: none !important; }
+
+.nav-toggle {
+  display: none; flex-direction: column; gap: 5px;
+  background: none; border: none; cursor: none; padding: 4px;
+}
+.nav-toggle span { display: block; width: 24px; height: 1px; background: var(--white); transition: all 0.3s; }
+
+/* ── HERO ── */
+.hero {
+  height: 100vh; min-height: 600px;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 48px 72px;
+  position: relative; overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background: url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1800&q=85') center/cover no-repeat;
+  transform: scale(1.08);
+  transition: transform 8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.hero-bg.loaded { transform: scale(1.0); }
+
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(13,13,13,0.15) 0%,
+    rgba(13,13,13,0.5) 50%,
+    rgba(13,13,13,0.92) 85%,
+    rgba(13,13,13,1) 100%);
+}
+
+/* ── WORD-BY-WORD REVEAL ── */
+.reveal-line {
+  overflow: hidden; display: block;
+}
+
+.reveal-word {
+  display: inline-block;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s;
+}
+.reveal-word.visible {
+  transform: translateY(0); opacity: 1;
+}
+
+.hero-eyebrow {
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 20px;
+  position: relative;
+  display: flex; align-items: center; gap: 16px;
+  opacity: 0; transform: translateX(-16px);
+  transition: opacity 0.7s 0.6s, transform 0.7s 0.6s;
+}
+.hero-eyebrow::before {
+  content: ''; display: block; width: 40px; height: 1px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.6s 1s;
+}
+.hero-eyebrow.visible { opacity: 1; transform: translateX(0); }
+.hero-eyebrow.visible::before { transform: scaleX(1); }
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 92px);
+  font-weight: 300; line-height: 1.06;
+  letter-spacing: -0.01em;
+  color: var(--white);
+  position: relative;
+}
+.hero-title em { font-style: italic; color: var(--gold); }
+
+.hero-sub {
+  font-size: 15px; font-weight: 300;
+  color: rgba(242,240,235,0.55);
+  margin-top: 20px; max-width: 480px;
+  position: relative;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.7s, transform 0.7s;
+}
+.hero-sub.visible { opacity: 1; transform: translateY(0); }
+
+.hero-actions {
+  display: flex; gap: 16px; align-items: center;
+  margin-top: 36px; position: relative;
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.7s, transform 0.7s;
+}
+.hero-actions.visible { opacity: 1; transform: translateY(0); }
+
+.btn {
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  text-decoration: none; display: inline-block;
+  transition: all 0.25s; cursor: none;
+}
+.btn-primary { background: var(--gold); color: var(--black); padding: 14px 32px; }
+.btn-primary:hover { opacity: 0.88; letter-spacing: 0.2em; }
+.btn-outline {
+  background: transparent; color: var(--white);
+  border: 1px solid rgba(242,240,235,0.3); padding: 13px 32px;
+}
+.btn-outline:hover { border-color: var(--white); letter-spacing: 0.2em; }
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute; bottom: 72px; right: 48px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-family: var(--font-label); font-size: 9px;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+  opacity: 0; transition: opacity 0.6s 2.2s;
+}
+.hero-scroll.visible { opacity: 1; }
+.scroll-line {
+  width: 1px; height: 52px; background: var(--border);
+  position: relative; overflow: hidden;
+}
+.scroll-line::after {
+  content: ''; position: absolute; top: -100%; left: 0;
+  width: 1px; height: 100%; background: var(--gold);
+  animation: scrollDown 2s ease-in-out infinite 2.5s;
+}
+@keyframes scrollDown { 0%{top:-100%} 100%{top:100%} }
+
+/* ── PARALLAX IMAGE ── */
+.parallax-wrap {
+  position: relative; overflow: hidden;
+}
+.parallax-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  display: block;
+}
+
+/* ── SECTIONS ── */
+section { padding: 96px 48px; }
+
+.section-label {
+  font-family: var(--font-label);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold);
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.section-label::before {
+  content: ''; display: block; width: 0; height: 1px; background: var(--gold);
+  transition: width 0.6s 0.2s;
+}
+.section-label.visible::before { width: 24px; }
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 300; line-height: 1.1;
+  color: var(--white);
+}
+
+.section-header {
+  display: flex; align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 56px; gap: 32px;
+}
+
+.section-link {
+  font-family: var(--font-label);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+  white-space: nowrap; align-self: flex-end;
+  transition: color 0.2s, gap 0.3s; cursor: none;
+}
+.section-link::after { content: '→'; transition: transform 0.25s; }
+.section-link:hover { color: var(--white); gap: 16px; }
+.section-link:hover::after { transform: translateX(4px); }
+
+/* ── ABOUT ── */
+.about {
+  background: var(--dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.about-text p {
+  font-size: 15px; font-weight: 300;
+  color: rgba(242,240,235,0.65); line-height: 1.85; margin-bottom: 16px;
+}
+.about-values { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.value-card {
+  background: var(--surface); padding: 28px 24px;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+  transform: translateY(0);
+}
+.value-card:hover { border-color: var(--gold); background: rgba(245,166,35,0.04); transform: translateY(-4px); }
+.value-title {
+  font-family: var(--font-label); font-size: 12px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+}
+.value-desc { font-size: 13px; font-weight: 300; color: var(--muted); line-height: 1.65; }
+
+/* ── STAT BAR ── */
+.stat-bar {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-item {
+  padding: 40px; border-right: 1px solid var(--border); text-align: center;
+  position: relative; overflow: hidden;
+}
+.stat-item::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(245,166,35,0.03);
+  transform: scaleY(0); transform-origin: bottom;
+  transition: transform 0.4s ease;
+}
+.stat-item:hover::after { transform: scaleY(1); }
+.stat-item:last-child { border-right: none; }
+.stat-number {
+  font-family: var(--font-display); font-size: 56px; font-weight: 300;
+  color: var(--white); line-height: 1;
+}
+.stat-number span { color: var(--gold); }
+.stat-label {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-top: 8px;
+}
+
+/* ── PROJECTS ── */
+.projects-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 3px;
+}
+.project-card {
+  position: relative; overflow: hidden;
+  aspect-ratio: 3/4; cursor: none; background: var(--surface);
+}
+.project-card.featured { grid-column: span 2; aspect-ratio: unset; min-height: 480px; }
+.project-img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+  background: var(--surface); /* fallback if image fails */
+}
+
+/* Per-card gradient fallbacks when images blocked */
+.project-card:nth-child(1) .project-img { background: linear-gradient(135deg,#1a1a1a,#2a2010); }
+.project-card:nth-child(2) .project-img { background: linear-gradient(135deg,#1a1a1a,#101820); }
+.project-card:nth-child(3) .project-img { background: linear-gradient(135deg,#1a1a1a,#201010); }
+.project-card:hover .project-img { transform: scale(1.06); }
+.project-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(13,13,13,0.95) 0%, rgba(13,13,13,0.05) 55%);
+  display: flex; flex-direction: column; justify-content: flex-end; padding: 28px;
+}
+.project-cat {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+  transform: translateY(6px); opacity: 0;
+  transition: transform 0.35s 0.05s, opacity 0.35s 0.05s;
+}
+.project-name {
+  font-family: var(--font-display); font-size: 22px; font-weight: 400;
+  line-height: 1.2; color: var(--white);
+  transform: translateY(8px); opacity: 0;
+  transition: transform 0.35s 0.1s, opacity 0.35s 0.1s;
+}
+.project-card.featured .project-name { font-size: 32px; }
+.project-loc {
+  font-size: 12px; font-weight: 300; color: rgba(242,240,235,0.45); margin-top: 4px;
+  transform: translateY(8px); opacity: 0;
+  transition: transform 0.35s 0.15s, opacity 0.35s 0.15s;
+}
+
+/* Always show on mobile, reveal on hover for desktop */
+.project-card:hover .project-cat,
+.project-card:hover .project-name,
+.project-card:hover .project-loc {
+  transform: translateY(0); opacity: 1;
+}
+
+/* Keep visible for non-hover (always show) */
+.project-cat, .project-name, .project-loc {
+  transform: translateY(0); opacity: 1;
+}
+/* Override: hide and reveal on hover only on desktop */
+@media (hover: hover) {
+  .project-cat { transform: translateY(6px); opacity: 0.7; }
+  .project-name { transform: translateY(8px); opacity: 0.85; }
+  .project-loc { transform: translateY(8px); opacity: 0; }
+  .project-card:hover .project-cat { transform: translateY(0); opacity: 1; }
+  .project-card:hover .project-name { transform: translateY(0); opacity: 1; }
+  .project-card:hover .project-loc { transform: translateY(0); opacity: 1; }
+}
+
+/* Line that slides up on card hover */
+.project-line {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 2px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.project-card:hover .project-line { transform: scaleX(1); }
+
+/* ── CATEGORIES LIST ── */
+.categories { background: var(--dark); border-top: 1px solid var(--border); }
+.cat-list { list-style: none; border-top: 1px solid var(--border); }
+.cat-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 22px 0; border-bottom: 1px solid var(--border);
+  cursor: none; text-decoration: none; color: inherit;
+  transition: padding-left 0.3s cubic-bezier(0.16,1,0.3,1);
+  position: relative; overflow: hidden;
+}
+.cat-item::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: var(--gold);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform 0.3s ease;
+}
+.cat-item:hover { padding-left: 16px; }
+.cat-item:hover::before { transform: scaleY(1); }
+.cat-item:hover .cat-name { color: var(--white); }
+.cat-item:hover .cat-arrow { color: var(--gold); transform: translateX(6px); }
+.cat-number {
+  font-family: var(--font-label); font-size: 11px; font-weight: 400;
+  letter-spacing: 0.1em; color: var(--muted); min-width: 36px;
+}
+.cat-name {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3vw, 36px); font-weight: 300;
+  color: rgba(242,240,235,0.65); flex: 1; padding: 0 32px;
+  transition: color 0.25s;
+}
+.cat-count { font-family: var(--font-label); font-size: 11px; letter-spacing: 0.1em; color: var(--muted); min-width: 60px; text-align: right; }
+.cat-arrow { font-size: 18px; color: var(--muted); transition: color 0.25s, transform 0.3s cubic-bezier(0.16,1,0.3,1); margin-left: 24px; }
+
+/* ── IMAGE REVEAL on scroll ── */
+.img-reveal {
+  position: relative; overflow: hidden;
+}
+.img-reveal img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ── TEAM ── */
+.team-grid {
+  display: flex; flex-wrap: wrap;
+  justify-content: center;
+  gap: 3px; max-width: 900px; margin: 0 auto;
+}
+.team-card {
+  position: relative; overflow: hidden;
+  width: calc(25% - 3px); min-width: 180px; max-width: 220px;
+  aspect-ratio: 1/1;
+  background: var(--surface); cursor: none; flex-shrink: 0;
+}
+.team-card img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top; display: block;
+}
+.team-card-body {
+  position: absolute; bottom: 0; left: 0; right: 0; padding: 14px;
+  background: linear-gradient(to top, rgba(13,13,13,0.97) 0%, transparent 100%);
+  text-align: center;
+  transform: translateY(8px); opacity: 0;
+  transition: transform 0.4s, opacity 0.4s;
+}
+.team-card:hover .team-card-body { transform: translateY(0); opacity: 1; }
+.team-name { font-family: var(--font-display); font-size: 16px; font-weight: 400; color: var(--white); }
+.team-role {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-top: 3px;
+}
+.team-placeholder {
+  width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+  background: var(--surface); min-height: 260px;
+}
+.team-initials { font-family: var(--font-display); font-size: 52px; font-weight: 300; color: var(--border); }
+
+/* Team card shimmer */
+.team-card::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(245,166,35,0.06) 50%, transparent 60%);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+.team-card:hover::after { transform: translateX(100%); }
+
+/* ── CONTACT ── */
+.contact { background: var(--dark); border-top: 1px solid var(--border); }
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; }
+.contact-info { display: flex; flex-direction: column; gap: 32px; }
+.contact-block-label {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+}
+.contact-block-value { font-size: 16px; font-weight: 300; color: var(--white); line-height: 1.55; }
+.contact-block-value a { color: var(--white); text-decoration: none; transition: color 0.2s; }
+.contact-block-value a:hover { color: var(--gold); }
+.contact-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+}
+.form-input, .form-textarea {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--white); font-family: var(--font-body);
+  font-size: 14px; font-weight: 300; padding: 12px 16px;
+  outline: none; transition: border-color 0.25s; width: 100%;
+}
+.form-input:focus, .form-textarea:focus { border-color: var(--gold); }
+.form-textarea { resize: vertical; min-height: 120px; }
+.form-checkbox { display: flex; align-items: flex-start; gap: 12px; }
+.form-checkbox input[type="checkbox"] { width: 14px; height: 14px; margin-top: 3px; accent-color: var(--gold); flex-shrink: 0; }
+.form-checkbox label { font-size: 12px; font-weight: 300; color: var(--muted); line-height: 1.5; }
+.form-submit {
+  background: var(--gold); color: var(--black); border: none; cursor: none;
+  font-family: var(--font-label); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  padding: 14px 32px; align-self: flex-start;
+  transition: opacity 0.2s, letter-spacing 0.3s;
+  position: relative; overflow: hidden;
+}
+.form-submit::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,255,255,0.15);
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+.form-submit:hover { opacity: 0.9; letter-spacing: 0.22em; }
+.form-submit:hover::after { transform: translateX(100%); }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border); padding: 32px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+}
+.footer-copy { font-size: 12px; font-weight: 300; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; list-style: none; }
+.footer-links a {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+.footer-social { display: flex; gap: 16px; }
+.footer-social a {
+  font-family: var(--font-label); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color 0.2s;
+}
+.footer-social a:hover { color: var(--gold); }
+
+/* ── SCROLL REVEAL BASE ── */
+.sr {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.sr.visible { opacity: 1; transform: translateY(0); }
+.sr-left { opacity: 0; transform: translateX(-40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+.sr-left.visible { opacity: 1; transform: translateX(0); }
+.sr-right { opacity: 0; transform: translateX(40px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+.sr-right.visible { opacity: 1; transform: translateX(0); }
+
+/* stagger children */
+.sr-stagger > * { opacity: 0; transform: translateY(24px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.sr-stagger.visible > *:nth-child(1) { opacity:1;transform:translateY(0);transition-delay:0s; }
+.sr-stagger.visible > *:nth-child(2) { opacity:1;transform:translateY(0);transition-delay:0.1s; }
+.sr-stagger.visible > *:nth-child(3) { opacity:1;transform:translateY(0);transition-delay:0.2s; }
+.sr-stagger.visible > *:nth-child(4) { opacity:1;transform:translateY(0);transition-delay:0.3s; }
+.sr-stagger.visible > *:nth-child(5) { opacity:1;transform:translateY(0);transition-delay:0.4s; }
+.sr-stagger.visible > *:nth-child(6) { opacity:1;transform:translateY(0);transition-delay:0.5s; }
+
+/* ── HORIZONTAL RULE ── */
+.divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* ── RESPONSIVE : tablette ── */
+@media (max-width: 900px) {
+  body { cursor: auto; }
+  #cursor, #cursor-ring { display: none; }
+
+  nav { padding: 0 20px; height: 64px; }
+  .nav-links { display: none; }
+  .nav-links.open {
+    display: flex; flex-direction: column; gap: 0;
+    position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+    background: rgba(13,13,13,0.98); backdrop-filter: blur(16px);
+    padding: 32px 20px; overflow-y: auto; z-index: 99;
+  }
+  .nav-links.open li { border-bottom: 1px solid var(--border); }
+  .nav-links.open li:last-child { border-bottom: none; margin-top: 24px; }
+  .nav-links.open li a {
+    display: block; padding: 18px 0;
+    font-size: 14px; letter-spacing: 0.1em;
+    color: var(--white);
+  }
+  .nav-links.open .nav-cta {
+    display: block; text-align: center;
+    padding: 16px; background: var(--gold); color: var(--black);
+  }
+  .nav-toggle { display: flex; }
+
+  .hero { padding: 0 20px 48px; min-height: 100svh; }
+  .hero-scroll { display: none; }
+
+  section { padding: 56px 20px; }
+  #projets { padding-bottom: 0; }
+
+  .stat-bar { grid-template-columns: repeat(3,1fr); }
+  .stat-item { padding: 24px 12px; border-right: 1px solid var(--border); border-bottom: none; }
+  .stat-item:last-child { border-right: none; }
+  .stat-number { font-size: 32px; }
+
+  .about-grid { grid-template-columns: 1fr; gap: 40px; }
+  .about-values { grid-template-columns: 1fr 1fr; gap: 2px; }
+
+  .projects-grid { grid-template-columns: 1fr 1fr; }
+  .project-card.featured { grid-column: span 2; min-height: 360px; }
+
+  .cat-name { font-size: 22px; padding: 0 16px; }
+
+  .team-card { min-width: 140px; max-width: 180px; }
+  .team-card-body { opacity: 1; transform: none; }
+
+  .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+  .form-row { grid-template-columns: 1fr; }
+
+  footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .footer-links { flex-wrap: wrap; gap: 16px; }
+}
+
+/* ── RESPONSIVE : mobile ── */
+@media (max-width: 480px) {
+  nav { padding: 0 16px; height: 60px; }
+  .nav-links.open { top: 60px; padding: 24px 16px; }
+  .nav-logo-text { font-size: 22px; }
+
+  .hero { padding: 0 16px 40px; }
+  .hero-eyebrow { font-size: 9px; letter-spacing: 0.14em; }
+  .hero-sub { font-size: 13px; }
+  .hero-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .btn { width: 100%; text-align: center; padding: 16px 20px; }
+
+  section { padding: 48px 16px; }
+
+  .stat-bar { grid-template-columns: repeat(3,1fr); }
+  .stat-item { padding: 20px 8px; }
+  .stat-number { font-size: 26px; }
+  .stat-label { font-size: 9px; letter-spacing: 0.08em; }
+
+  .about-values { grid-template-columns: 1fr; }
+  .value-card { padding: 20px 16px; }
+
+  .section-header { flex-direction: column; gap: 16px; align-items: flex-start; }
+  .section-link { align-self: flex-start; }
+
+  .projects-grid { grid-template-columns: 1fr; gap: 2px; }
+  .project-card { aspect-ratio: 4/3; }
+  .project-card.featured { grid-column: span 1; aspect-ratio: 4/3; min-height: unset; }
+
+  .cat-item { padding: 18px 0; }
+  .cat-name { font-size: 18px; padding: 0 12px; }
+  .cat-number, .cat-count { font-size: 10px; }
+  .cat-arrow { display: none; }
+
+  .team-card { min-width: 120px; max-width: 160px; }
+
+  .contact-info { gap: 24px; }
+  .contact-block-value { font-size: 14px; }
+  .form-input, .form-textarea { font-size: 16px; } /* prevent iOS zoom */
+  .form-submit { width: 100%; text-align: center; padding: 16px; }
+
+  footer { gap: 16px; }
+  .footer-links { gap: 12px; }
+
+  /* Loader mobile */
+  .loader-logo { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo"><span>B</span>10 Architecture</div>
+  <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
+  <div class="loader-pct" id="loaderPct">0%</div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo" id="navLogo">
+    <span class="nav-logo-text"><span class="gold">B</span>10 Architecture &amp; Design</span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#bureau">Bureau</a></li>
+    <li><a href="#projets">Projets</a></li>
+    <li><a href="#equipe">Équipe</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg" id="heroBg"></div>
+  <div class="hero-overlay"></div>
+
+  <p class="hero-eyebrow" id="heroEyebrow">Architecture & Design — Visé, Belgique</p>
+
+  <h1 class="hero-title" id="heroTitle" aria-label="Architecture anticonformiste pour marchés privés">
+    <span class="reveal-line" id="rl1"></span>
+    <span class="reveal-line" id="rl2"></span>
+    <span class="reveal-line" id="rl3"></span>
+  </h1>
+
+  <p class="hero-sub" id="heroSub">
+    Depuis 2017, B10 Architecture &amp; Design développe des projets ambitieux et innovants, guidés par l'écoute, la transparence et la solidarité.
+  </p>
+
+  <div class="hero-actions" id="heroActions">
+    <a href="#projets" class="btn btn-primary">Voir nos projets</a>
+    <a href="#bureau" class="btn btn-outline">Notre bureau</a>
+  </div>
+
+  <div class="hero-scroll" id="heroScroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- STAT BAR -->
+<div class="stat-bar sr-stagger" id="statBar">
+  <div class="stat-item">
+    <div class="stat-number" data-count="20">20<span>+</span></div>
+    <div class="stat-label">Projets réalisés</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number" data-count="6">6</div>
+    <div class="stat-label">Typologies</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number" data-target="2017">2017</div>
+    <div class="stat-label">Fondation</div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="bureau">
+  <div class="section-header">
+    <div class="sr-left">
+      <p class="section-label">Notre bureau</p>
+      <h2 class="section-title">Quatre engagements,<br>chaque projet</h2>
+    </div>
+  </div>
+  <div class="about-grid">
+    <div class="about-text sr-left">
+      <div class="img-reveal" style="margin-bottom:32px;height:260px;border-radius:2px;overflow:hidden;">
+        <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900&q=80" alt="Bureau B10" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+      <p>Depuis le 1er juillet 2017, B10 Architecture &amp; Design sprl s'est constituée pour se consacrer exclusivement aux marchés privés. Profitant de cette nouvelle impulsion, B10 s'investit dans des projets à plus grande échelle, plus ambitieux et innovants.</p>
+      <p>Tous nos projets sont développés en englobant nos valeurs fondamentales : l'anticonformisme, l'écoute, la transparence et la solidarité.</p>
+      <p>Nous considérons chaque projet comme unique et proposons spontanément des alternatives écoresponsables incluant des techniques ou des matériaux innovants avec un indice carbone faible.</p>
+      <a href="#contact" class="btn btn-outline" style="margin-top:24px;display:inline-block;">Nous contacter</a>
+    </div>
+    <div class="about-values sr-stagger sr-right">
+      <div class="value-card">
+        <div class="value-title">Anticonformiste</div>
+        <div class="value-desc">Chaque projet est unique. Nous proposons des solutions sur mesure, inattendues et écoresponsables.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-title">Solidaire</div>
+        <div class="value-desc">Engagement collectif autour du projet, en cherchant à tout moment une solution commune dans votre intérêt.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-title">Transparent</div>
+        <div class="value-desc">Communication constante, devis clairs et détaillés, meilleur rapport qualité/prix dans les délais les plus courts.</div>
+      </div>
+      <div class="value-card">
+        <div class="value-title">À l'écoute</div>
+        <div class="value-desc">Ouverture en cas de divergences, votre intérêt prime toujours. Chaque remarque est une opportunité d'amélioration.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projets" style="padding-bottom:0;">
+  <div class="section-header sr">
+    <div>
+      <p class="section-label">Réalisations</p>
+      <h2 class="section-title">Nos projets</h2>
+    </div>
+    <a href="#categories" class="section-link">Toutes les catégories</a>
+  </div>
+</section>
+
+<!-- ROW 1 : Hall industriel featured + 2 halls -->
+<div class="projects-grid sr-stagger">
+  <div class="project-card featured img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=1400&q=85" alt="Hall Awans" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Halls industriels</p>
+      <h3 class="project-name" data-href="projets/hall-awans.html">Hall de stockage et bureaux à Awans</h3>
+      <p class="project-loc">Awans, Belgique · 2023</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80" alt="Station Hognoul" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Halls industriels</p>
+      <h3 class="project-name">Station service & parking à Hognoul</h3>
+      <p class="project-loc">Hognoul, Belgique · 2022</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?w=800&q=80" alt="Extension Seraing" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Halls industriels</p>
+      <h3 class="project-name" data-href="projets/extension-seraing.html">Extension hall industriel à Seraing</h3>
+      <p class="project-loc">Seraing, Belgique · 2021</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+</div>
+
+<!-- ROW 2 : 2 bureaux + maison featured -->
+<div class="projects-grid sr-stagger" style="margin-top:3px;">
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80" alt="Bureaux Liège" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Bureaux</p>
+      <h3 class="project-name" data-href="projets/bureaux-liege.html">Plateau open-space PME</h3>
+      <p class="project-loc">Liège, Belgique · 2023</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=800&q=80" alt="Bureaux Visé" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Bureaux</p>
+      <h3 class="project-name" data-href="projets/bureaux-vise.html">Réaménagement siège social</h3>
+      <p class="project-loc">Visé, Belgique · 2022</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card featured img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1400&q=85" alt="Villa Visé" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Habitations unifamiliales</p>
+      <h3 class="project-name" data-href="projets/villa-vise.html">Villa contemporaine à Visé</h3>
+      <p class="project-loc">Visé, Belgique · 2023</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+</div>
+
+<!-- ROW 3 : maison passive + 2 logements collectifs -->
+<div class="projects-grid sr-stagger" style="margin-top:3px;">
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Maison Dalhem" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Habitations unifamiliales</p>
+      <h3 class="project-name" data-href="projets/maison-dalhem.html">Maison passive à Dalhem</h3>
+      <p class="project-loc">Dalhem, Belgique · 2022</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80" alt="Résidence Maastricht" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Ensembles de logements</p>
+      <h3 class="project-name" data-href="projets/residence-maastricht.html">Résidence urbaine — 12 logements</h3>
+      <p class="project-loc">Maastricht, Pays-Bas · 2023</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1460317442991-0ec209397118?w=800&q=80" alt="Appartements Guillemins" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Ensembles de logements</p>
+      <h3 class="project-name" data-href="projets/appartements-guillemins.html">8 appartements — Quartier Guillemins</h3>
+      <p class="project-loc">Liège, Belgique · 2021</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+</div>
+
+<!-- ROW 4 : loft featured + cuisine + esquisse -->
+<div class="projects-grid sr-stagger" style="margin-top:3px;">
+  <div class="project-card featured img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400&q=85" alt="Loft industriel" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Aménagements intérieurs</p>
+      <h3 class="project-name" data-href="projets/loft-liege.html">Rénovation loft industriel</h3>
+      <p class="project-loc">Liège, Belgique · 2023</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80" alt="Cuisine Dalhem" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Aménagements intérieurs</p>
+      <h3 class="project-name">Cuisine & séjour — Maison Dalhem</h3>
+      <p class="project-loc">Dalhem, Belgique · 2022</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+  <div class="project-card img-reveal">
+    <img class="project-img parallax-img" src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=800&q=80" alt="Esquisse bioclimatique" loading="eager">
+    <div class="project-overlay">
+      <p class="project-cat">Esquisses de projet</p>
+      <h3 class="project-name" data-href="projets/maison-bioclimatique.html">Maison passive bioclimatique</h3>
+      <p class="project-loc">Huy, Belgique · En cours</p>
+    </div>
+    <div class="project-line"></div>
+  </div>
+</div>
+<section class="categories" id="categories">
+  <div class="section-header sr">
+    <div>
+      <p class="section-label">Expertises</p>
+      <h2 class="section-title">Nos typologies</h2>
+    </div>
+  </div>
+  <ul class="cat-list sr-stagger">
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">01</span><span class="cat-name">Halls industriels</span>
+      <span class="cat-count">3 projets</span><span class="cat-arrow">→</span>
+    </a></li>
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">02</span><span class="cat-name">Bureaux</span>
+      <span class="cat-count">— projets</span><span class="cat-arrow">→</span>
+    </a></li>
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">03</span><span class="cat-name">Habitations unifamiliales</span>
+      <span class="cat-count">— projets</span><span class="cat-arrow">→</span>
+    </a></li>
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">04</span><span class="cat-name">Ensembles de logements</span>
+      <span class="cat-count">— projets</span><span class="cat-arrow">→</span>
+    </a></li>
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">05</span><span class="cat-name">Aménagements intérieurs</span>
+      <span class="cat-count">— projets</span><span class="cat-arrow">→</span>
+    </a></li>
+    <li><a class="cat-item" href="#">
+      <span class="cat-number">06</span><span class="cat-name">Esquisses de projet</span>
+      <span class="cat-count">— projets</span><span class="cat-arrow">→</span>
+    </a></li>
+  </ul>
+</section>
+
+<!-- TEAM -->
+<section id="equipe">
+  <div class="section-header sr">
+    <div>
+      <p class="section-label">L'équipe</p>
+      <h2 class="section-title">Notre équipe</h2>
+    </div>
+  </div>
+  <div class="team-grid sr-stagger">
+    <div class="team-card">
+      <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" alt="Architecte associé" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="team-card-body"><div class="team-name">Thomas Renard</div><div class="team-role">Architecte associé — Direction</div></div>
+    </div>
+    <div class="team-card">
+      <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80" alt="Architecte" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="team-card-body"><div class="team-name">Sophie Marchal</div><div class="team-role">Architecte — Projet</div></div>
+    </div>
+    <div class="team-card">
+      <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&q=80" alt="Architecte" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="team-card-body"><div class="team-name">Lucas Devaux</div><div class="team-role">Architecte — Projet</div></div>
+    </div>
+    <div class="team-card">
+      <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=600&q=80" alt="Chargée de mission" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <div class="team-card-body"><div class="team-name">Inès Lambert</div><div class="team-role">Chargée de mission — Technique</div></div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:16px;font-style:italic;">* Noms et photos d'illustration — à remplacer par le contenu définitif.</p>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="section-header sr">
+    <div>
+      <p class="section-label">Nous rejoindre</p>
+      <h2 class="section-title">Contactez-nous</h2>
+    </div>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info sr-left">
+      <div class="contact-block">
+        <div class="contact-block-label">Adresse</div>
+        <div class="contact-block-value">Chemin de Richelle 4<br>4600 Visé, Belgique</div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-label">Email</div>
+        <div class="contact-block-value"><a href="mailto:info@b10architecture.be">info@b10architecture.be</a></div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-label">Téléphone</div>
+        <div class="contact-block-value"><a href="tel:042770660">04 277 06 60</a></div>
+      </div>
+      <div class="contact-block">
+        <div class="contact-block-label">Réseaux sociaux</div>
+        <div style="display:flex;gap:16px;margin-top:4px;">
+          <a href="https://www.facebook.com/b10architecture/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">Facebook</a>
+          <a href="https://www.instagram.com/b10architecture/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">Instagram</a>
+          <a href="https://www.linkedin.com/company/b10-architecture-design/" target="_blank" style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color 0.2s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--muted)'">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+    <div class="contact-form sr-right">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label" for="name">Votre nom</label><input class="form-input" type="text" id="name" placeholder="Jean Dupont"></div>
+        <div class="form-group"><label class="form-label" for="email">E-mail</label><input class="form-input" type="email" id="email" placeholder="jean@exemple.be"></div>
+      </div>
+      <div class="form-group"><label class="form-label" for="subject">Sujet</label><input class="form-input" type="text" id="subject" placeholder="Votre projet"></div>
+      <div class="form-group"><label class="form-label" for="message">Message</label><textarea class="form-textarea" id="message" placeholder="Décrivez votre projet..."></textarea></div>
+      <div class="form-checkbox"><input type="checkbox" id="urgent"><label for="urgent">Je souhaite être contacté rapidement</label></div>
+      <div class="form-checkbox"><input type="checkbox" id="rgpd"><label for="rgpd">J'ai lu et j'accepte la politique générale de protection des données personnelles.</label></div>
+      <button class="form-submit">Envoyer le message</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 B10 Architecture & Design. All rights reserved.</span>
+  <ul class="footer-links">
+    <li><a href="#">Conditions générales</a></li>
+    <li><a href="#">RGPD</a></li>
+    <li><a href="#">Vie privée</a></li>
+  </ul>
+  <div class="footer-social">
+    <a href="https://www.facebook.com/b10architecture/" target="_blank">FB</a>
+    <a href="https://www.instagram.com/b10architecture/" target="_blank">IG</a>
+    <a href="https://www.linkedin.com/company/b10-architecture-design/" target="_blank">LI</a>
+  </div>
+</footer>
+
+<script>
+// ── LOADER ──
+const loaderBar = document.getElementById('loaderBar');
+const loaderPct = document.getElementById('loaderPct');
+const loader = document.getElementById('loader');
+let pct = 0;
+const loaderInterval = setInterval(() => {
+  pct += Math.random() * 18;
+  if (pct >= 100) { pct = 100; clearInterval(loaderInterval); startSite(); }
+  loaderBar.style.width = pct + '%';
+  loaderPct.textContent = Math.floor(pct) + '%';
+}, 80);
+
+function startSite() {
+  setTimeout(() => {
+    loader.style.transition = 'opacity 0.8s, transform 0.8s';
+    loader.style.opacity = '0';
+    loader.style.transform = 'translateY(-20px)';
+    setTimeout(() => {
+      loader.style.display = 'none';
+      // Trigger hero animations
+      document.getElementById('heroBg').classList.add('loaded');
+      document.getElementById('heroEyebrow').classList.add('visible');
+      buildHeroTitle();
+      setTimeout(() => {
+        document.getElementById('heroSub').classList.add('visible');
+        document.getElementById('heroActions').classList.add('visible');
+        document.getElementById('heroScroll').classList.add('visible');
+        document.getElementById('navLogo').classList.add('visible');
+        document.getElementById('navLinks').classList.add('visible');
+      }, 900);
+    }, 800);
+  }, 300);
+}
+
+// ── HERO TITLE word-by-word reveal ──
+function buildHeroTitle() {
+  const lines = [
+    { el: 'rl1', words: ['Architecture'], italic: false },
+    { el: 'rl2', words: ['anticonformiste'], italic: true },
+    { el: 'rl3', words: ['pour', 'marchés', 'privés'], italic: false }
+  ];
+  let delay = 0.55;
+  lines.forEach(line => {
+    const container = document.getElementById(line.el);
+    line.words.forEach(word => {
+      const span = document.createElement('span');
+      span.className = 'reveal-word';
+      if (line.italic) span.style.cssText = 'font-style:italic;color:var(--gold);';
+      span.textContent = word + '\u00A0';
+      span.style.transitionDelay = delay + 's';
+      container.appendChild(span);
+      delay += 0.12;
+    });
+    delay += 0.05;
+  });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('.reveal-word').forEach(w => w.classList.add('visible'));
+    });
+  });
+}
+
+// ── CUSTOM CURSOR ──
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let cx = 0, cy = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  cx = e.clientX; cy = e.clientY;
+  cursor.style.left = cx + 'px'; cursor.style.top = cy + 'px';
+});
+
+function animRing() {
+  rx += (cx - rx) * 0.12;
+  ry += (cy - ry) * 0.12;
+  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a, button, .project-card, .cat-item, .value-card, .team-card').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+});
+document.querySelectorAll('.btn, .nav-cta, .form-submit').forEach(el => {
+  el.addEventListener('mouseenter', () => { document.body.classList.remove('cursor-hover'); document.body.classList.add('cursor-link'); });
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-link'));
+});
+
+// ── NAV SCROLL ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 40);
+});
+
+// ── MOBILE NAV ──
+const toggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+function closeNav() {
+  navLinks.classList.remove('open');
+  const spans = toggle.querySelectorAll('span');
+  spans[0].style.transform = ''; spans[1].style.opacity = ''; spans[2].style.transform = '';
+}
+toggle.addEventListener('click', () => {
+  const isOpen = navLinks.classList.toggle('open');
+  const spans = toggle.querySelectorAll('span');
+  if (isOpen) {
+    spans[0].style.transform = 'translateY(6px) rotate(45deg)';
+    spans[1].style.opacity = '0';
+    spans[2].style.transform = 'translateY(-6px) rotate(-45deg)';
+  } else { closeNav(); }
+});
+// Close nav when a link is tapped on mobile
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+
+// ── SCROLL REVEAL ──
+// Use a small timeout fallback so elements always show even if observer misfires (file://)
+function revealAll() {
+  document.querySelectorAll('.sr, .sr-left, .sr-right, .sr-stagger, .section-label').forEach(el => {
+    el.classList.add('visible');
+  });
+}
+
+const srObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      srObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.sr, .sr-left, .sr-right, .sr-stagger, .section-label').forEach(el => {
+  srObserver.observe(el);
+});
+
+// Fallback: if page is loaded via file:// or observer doesn't fire, reveal everything after 1.5s
+setTimeout(() => {
+  document.querySelectorAll('.sr:not(.visible), .sr-left:not(.visible), .sr-right:not(.visible), .sr-stagger:not(.visible)').forEach(el => {
+    el.classList.add('visible');
+  });
+}, 1500);
+
+// ── COUNTER ANIMATION ──
+function animateCount(el, target, suffix) {
+  let start = 0;
+  const dur = 1200, step = 16;
+  const timer = setInterval(() => {
+    start += target / (dur / step);
+    if (start >= target) { start = target; clearInterval(timer); }
+    el.innerHTML = Math.floor(start) + (suffix || '');
+  }, step);
+}
+
+const countObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target.querySelector('.stat-number[data-count]');
+      if (el && !el.dataset.animated) {
+        el.dataset.animated = '1';
+        const val = parseInt(el.dataset.count);
+        const suffix = el.innerHTML.includes('+') ? '<span>+</span>' : '';
+        animateCount(el, val, suffix);
+      }
+      countObserver.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.3, rootMargin: '0px 0px 0px 0px' });
+document.querySelectorAll('.stat-item').forEach(el => countObserver.observe(el));
+// Fallback: trigger counters if already in view after 800ms
+setTimeout(() => {
+  document.querySelectorAll('.stat-item').forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const numEl = el.querySelector('.stat-number[data-count]');
+    if (rect.top < window.innerHeight && numEl && !numEl.dataset.animated) {
+      numEl.dataset.animated = '1';
+      const val = parseInt(numEl.dataset.count);
+      const suffix = numEl.innerHTML.includes('+') ? '<span>+</span>' : '';
+      animateCount(numEl, val, suffix);
+    }
+  });
+}, 800);
+
+// ── PARALLAX on project images ──
+function onScroll() {
+  document.querySelectorAll('.parallax-img').forEach(img => {
+    const rect = img.closest('.project-card').getBoundingClientRect();
+    const vh = window.innerHeight;
+    if (rect.bottom < 0 || rect.top > vh) return;
+    const progress = (vh - rect.top) / (vh + rect.height);
+    const offset = (progress - 0.5) * 40;
+    img.style.transform = `scale(1.08) translateY(${offset}px)`;
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+// ── IMAGE FALLBACK (file:// ou réseau absent) ──
+const gradients = [
+  'linear-gradient(135deg,#1e1a0e,#2d2510)',
+  'linear-gradient(135deg,#0e1520,#152030)',
+  'linear-gradient(135deg,#1a0e0e,#2d1510)',
+  'linear-gradient(135deg,#0e1a14,#102d1e)',
+  'linear-gradient(135deg,#1a1020,#200e2d)',
+  'linear-gradient(135deg,#1a1a14,#2d2d10)',
+];
+document.querySelectorAll('.project-img').forEach((img, i) => {
+  img.addEventListener('error', function() {
+    const card = this.closest('.project-card');
+    const grad = gradients[i % gradients.length];
+    this.style.cssText = `background:${grad};width:100%;height:100%;display:block;`;
+    this.removeAttribute('src');
+    // Add a subtle texture overlay
+    if (!card.querySelector('.img-fallback-overlay')) {
+      const ov = document.createElement('div');
+      ov.className = 'img-fallback-overlay';
+      ov.style.cssText = `position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 40px,rgba(245,166,35,0.02) 40px,rgba(245,166,35,0.02) 80px);z-index:0;`;
+      card.insertBefore(ov, card.firstChild);
+    }
+  });
+  // Trigger error check for already-failed images
+  if (img.complete && img.naturalWidth === 0) img.dispatchEvent(new Event('error'));
+});
+const sections = document.querySelectorAll('section[id]');
+const links = document.querySelectorAll('.nav-links a:not(.nav-cta)');
+const activeObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => activeObserver.observe(s));
+
+// ── DRILL-THROUGH NAVIGATION ──
+// Project cards → detail pages
+document.querySelectorAll('.project-name[data-href]').forEach(el => {
+  const card = el.closest('.project-card');
+  if (card) {
+    card.addEventListener('click', () => { window.location.href = el.dataset.href; });
+    const arrow = document.createElement('div');
+    arrow.style.cssText = 'position:absolute;top:16px;right:16px;width:32px;height:32px;border:1px solid rgba(242,240,235,0.25);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--white);opacity:0;transition:opacity 0.25s,transform 0.25s;z-index:2;transform:translateY(-6px);';
+    arrow.textContent = '→';
+    card.style.position = 'relative';
+    card.appendChild(arrow);
+    card.addEventListener('mouseenter', () => { arrow.style.opacity='1'; arrow.style.transform='translateY(0)'; });
+    card.addEventListener('mouseleave', () => { arrow.style.opacity='0'; arrow.style.transform='translateY(-6px)'; });
+  }
+});
+
+// Category items → category pages
+const catMap = {
+  'Halls industriels': 'categories/halls-industriels.html',
+  'Bureaux': 'categories/bureaux.html',
+  'Habitations unifamiliales': 'categories/habitations-unifamiliales.html',
+  'Ensembles de logements': 'categories/ensembles-de-logements.html',
+  'Aménagements intérieurs': 'categories/amenagements-interieurs.html',
+  'Esquisses de projet': 'categories/esquisses.html',
+};
+document.querySelectorAll('.cat-item').forEach(item => {
+  const name = item.querySelector('.cat-name')?.textContent?.trim();
+  if (catMap[name]) item.setAttribute('href', catMap[name]);
+});
+
+// Team cards → member pages
+const teamMap = {
+  'Thomas Renard': 'equipe/thomas-renard.html',
+  'Sophie Marchal': 'equipe/sophie-marchal.html',
+  'Lucas Devaux': 'equipe/lucas-devaux.html',
+  'Inès Lambert': 'equipe/ines-lambert.html',
+};
+document.querySelectorAll('.team-card').forEach(card => {
+  const name = card.querySelector('.team-name')?.textContent?.trim();
+  if (teamMap[name]) {
+    card.addEventListener('click', () => window.location.href = teamMap[name]);
+    const arrow = document.createElement('div');
+    arrow.style.cssText = 'position:absolute;top:12px;right:12px;width:28px;height:28px;border:1px solid rgba(242,240,235,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(242,240,235,0.6);opacity:0;transition:opacity 0.3s;z-index:3;';
+    arrow.textContent = '→';
+    card.appendChild(arrow);
+    card.addEventListener('mouseenter', () => arrow.style.opacity='1');
+    card.addEventListener('mouseleave', () => arrow.style.opacity='0');
+  }
+});
+
+// Value cards → bureau section (smooth scroll)
+document.querySelectorAll('.value-card').forEach(card => {
+  card.style.cursor = 'none';
+});
+
+</script>
+</body>
+</html>
