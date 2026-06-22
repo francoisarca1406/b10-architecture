@@ -1,0 +1,115 @@
+backend:
+  name: git-gateway
+  branch: main
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+locale: 'fr'
+
+collections:
+
+  # ── PARAMÈTRES GLOBAUX ──
+  - name: "settings"
+    label: "⚙️ Paramètres globaux"
+    files:
+      - name: "general"
+        label: "Informations générales"
+        file: "content/settings.json"
+        fields:
+          - { label: "Nom du cabinet", name: "nom", widget: "string", default: "B10 Architecture & Design" }
+          - { label: "Slogan hero", name: "slogan", widget: "string", default: "Architecture anticonformiste pour marchés privés" }
+          - { label: "Sous-titre hero", name: "hero_sub", widget: "text" }
+          - { label: "Photo hero (URL)", name: "hero_image", widget: "image" }
+          - { label: "Adresse", name: "adresse", widget: "string" }
+          - { label: "Email", name: "email", widget: "string" }
+          - { label: "Téléphone", name: "telephone", widget: "string" }
+          - { label: "Facebook URL", name: "facebook", widget: "string", required: false }
+          - { label: "Instagram URL", name: "instagram", widget: "string", required: false }
+          - { label: "LinkedIn URL", name: "linkedin", widget: "string", required: false }
+          - label: "Statistiques"
+            name: "stats"
+            widget: "object"
+            fields:
+              - { label: "Nombre de projets", name: "projets", widget: "number", default: 20 }
+              - { label: "Nombre de typologies", name: "typologies", widget: "number", default: 6 }
+              - { label: "Année de fondation", name: "fondation", widget: "number", default: 2017 }
+          - label: "Section Bureau — textes"
+            name: "bureau"
+            widget: "object"
+            fields:
+              - { label: "Titre", name: "titre", widget: "string" }
+              - { label: "Photo bureau", name: "photo", widget: "image", required: false }
+              - { label: "Paragraphe 1", name: "p1", widget: "text" }
+              - { label: "Paragraphe 2", name: "p2", widget: "text" }
+              - { label: "Paragraphe 3", name: "p3", widget: "text" }
+
+  # ── PROJETS ──
+  - name: "projets"
+    label: "🏗️ Projets"
+    folder: "content/projets"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: "titre"
+    summary: "{{titre}} — {{categorie}} ({{annee}})"
+    fields:
+      - { label: "Titre", name: "titre", widget: "string" }
+      - label: "Catégorie"
+        name: "categorie"
+        widget: "select"
+        options:
+          - { label: "Halls industriels", value: "halls-industriels" }
+          - { label: "Bureaux", value: "bureaux" }
+          - { label: "Habitations unifamiliales", value: "habitations-unifamiliales" }
+          - { label: "Ensembles de logements", value: "ensembles-de-logements" }
+          - { label: "Aménagements intérieurs", value: "amenagements-interieurs" }
+          - { label: "Esquisses de projet", value: "esquisses" }
+      - { label: "Lieu", name: "lieu", widget: "string" }
+      - { label: "Année", name: "annee", widget: "string" }
+      - { label: "Statut", name: "statut", widget: "select", options: ["Réalisé", "En cours", "Esquisse"], default: "Réalisé" }
+      - { label: "Photo principale", name: "photo", widget: "image" }
+      - label: "Galerie photos"
+        name: "galerie"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Photo", name: "url", widget: "image" }
+          - { label: "Légende", name: "legende", widget: "string", required: false }
+      - { label: "Description courte (carte)", name: "description_courte", widget: "text", required: false }
+      - { label: "Description complète", name: "description", widget: "markdown", required: false }
+      - { label: "Surface (m²)", name: "surface", widget: "string", required: false }
+      - { label: "Budget", name: "budget", widget: "string", required: false }
+      - { label: "Maître d'ouvrage", name: "maitre_ouvrage", widget: "string", required: false }
+      - { label: "Mise en avant (homepage)", name: "featured", widget: "boolean", default: false }
+      - { label: "Ordre d'affichage", name: "ordre", widget: "number", default: 99, required: false }
+
+  # ── ÉQUIPE ──
+  - name: "equipe"
+    label: "👥 Équipe"
+    folder: "content/equipe"
+    create: true
+    slug: "{{slug}}"
+    identifier_field: "nom"
+    summary: "{{nom}} — {{role}}"
+    fields:
+      - { label: "Nom complet", name: "nom", widget: "string" }
+      - { label: "Rôle / Titre", name: "role", widget: "string" }
+      - { label: "Photo", name: "photo", widget: "image" }
+      - { label: "Bio courte", name: "bio", widget: "text", required: false }
+      - { label: "Email", name: "email", widget: "string", required: false }
+      - { label: "LinkedIn", name: "linkedin", widget: "string", required: false }
+      - { label: "Ordre d'affichage", name: "ordre", widget: "number", default: 99 }
+
+  # ── CATÉGORIES ──
+  - name: "categories"
+    label: "📁 Catégories"
+    folder: "content/categories"
+    create: false
+    slug: "{{slug}}"
+    identifier_field: "titre"
+    fields:
+      - { label: "Titre", name: "titre", widget: "string" }
+      - { label: "Slug URL", name: "slug", widget: "string" }
+      - { label: "Description", name: "description", widget: "text", required: false }
+      - { label: "Photo de couverture", name: "photo", widget: "image", required: false }
+      - { label: "Numéro d'ordre", name: "ordre", widget: "number" }
