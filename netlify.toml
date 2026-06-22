@@ -1,16 +1,8 @@
+[build]
+  publish = "."
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
   force = false
-
-[build]
-  publish = "."
-
-# Formulaire de contact — notifications email
-[[build.environment]]
-
-[forms]
-  [forms.settings]
-    # Les notifications email se configurent dans Netlify Dashboard
-    # Site → Forms → contact → Form notifications → Add notification → Email
