@@ -69,6 +69,8 @@ collections:
     folder: "content/projets"
     create: true
     slug: "{{slug}}"
+    extension: "json"      # ← force l'écriture en .json (et non .md)
+    format: "json"         # ← pour que le loader de la home puisse les relire
     identifier_field: "titre"
     summary: "{{titre}} — {{categorie}} ({{annee}})"
     fields:
