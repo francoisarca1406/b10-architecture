@@ -1,5 +1,5 @@
 ---
-titre: Test titre projet
+titre: Test titre projettt
 categorie: bureaux
 lieu: Hermalle
 annee: "2010"
