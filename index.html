@@ -1575,34 +1575,69 @@ function renderProjects(projects) {
   }, 100);
 }
 
+// Parse le frontmatter YAML d'un fichier .md du CMS
+function parseFrontmatter(text) {
+  const m = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!m) return null;
+  const data = {};
+  m[1].split(/\r?\n/).forEach(line => {
+    if (!line.trim() || line.trim().startsWith('#')) return;
+    if (/^\s/.test(line)) return;            // ignore les lignes imbriquees (galerie)
+    const i = line.indexOf(':');
+    if (i === -1) return;
+    const key = line.slice(0, i).trim();
+    let val = line.slice(i + 1).trim();
+    if (!val || val === '[]') return;
+    if ((val.startsWith('"') && val.endsWith('"')) ||
+        (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    } else if (val === 'true')  { val = true; }
+    else if (val === 'false')   { val = false; }
+    else if (/^-?\d+$/.test(val)) { val = Number(val); }
+    data[key] = val;
+  });
+  return data;
+}
+
 async function loadCMSProjects() {
   try {
-    // Try to load from GitHub API
     const res = await fetch(GITHUB_API, {
       headers: { 'Accept': 'application/vnd.github.v3+json' }
     });
     if (!res.ok) throw new Error('API not available');
     const files = await res.json();
-    const jsonFiles = files.filter(f => f.name.endsWith('.json'));
 
-    if (jsonFiles.length === 0) {
-      // No CMS content yet — static already showing, nothing to do
+    // Accepte les deux formats : .json ET .md (frontmatter)
+    const entries = files.filter(f =>
+      f.type === 'file' && (f.name.endsWith('.json') || f.name.endsWith('.md'))
+    );
+
+    if (entries.length === 0) {
+      // Pas encore de contenu CMS : le statique reste affiche
       return;
     }
 
-    // Load each project JSON
-    const projects = await Promise.all(
-      jsonFiles.map(async f => {
+    const loaded = await Promise.all(entries.map(async f => {
+      try {
         const r = await fetch(f.download_url);
-        const data = await r.json();
-        // Extract slug from filename
-        data.slug = f.name.replace('.json','');
+        const text = await r.text();
+        const data = f.name.endsWith('.json')
+          ? JSON.parse(text)
+          : parseFrontmatter(text);
+        if (!data || !data.titre) return null;   // entree vide ou illisible : ignoree
+        data.slug = f.name.replace(/\.(json|md)$/, '');
         return data;
-      })
-    );
+      } catch (err) {
+        console.warn('Projet CMS illisible, ignore :', f.name, err.message);
+        return null;
+      }
+    }));
+
+    const projects = loaded.filter(Boolean);
+    if (projects.length === 0) return;   // rien d'exploitable : on garde le statique
+
     renderProjects(projects);
   } catch (e) {
-    // Fallback to static projects on any error
     console.log('CMS load failed, using static projects:', e.message);
     renderProjects(STATIC_PROJECTS);
   }
