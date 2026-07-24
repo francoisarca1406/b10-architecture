@@ -809,15 +809,15 @@ footer {
 <!-- STAT BAR -->
 <div class="stat-bar sr-stagger" id="statBar">
   <div class="stat-item">
-    <div class="stat-number" data-count="20">20<span>+</span></div>
+    <div class="stat-number" id="statProjets" data-count="20">20<span>+</span></div>
     <div class="stat-label">Projets réalisés</div>
   </div>
   <div class="stat-item">
-    <div class="stat-number" data-count="6">6</div>
+    <div class="stat-number" id="statTypologies" data-count="6">6</div>
     <div class="stat-label">Typologies</div>
   </div>
   <div class="stat-item">
-    <div class="stat-number" data-target="2017">2017</div>
+    <div class="stat-number" id="statFondation" data-target="2017">2017</div>
     <div class="stat-label">Fondation</div>
   </div>
 </div>
@@ -957,15 +957,15 @@ footer {
     <div class="contact-info sr-left">
       <div class="contact-block">
         <div class="contact-block-label">Adresse</div>
-        <div class="contact-block-value">Chemin de Richelle 4<br>4600 Visé, Belgique</div>
+        <div class="contact-block-value" id="setAdresse">Chemin de Richelle 4<br>4600 Visé, Belgique</div>
       </div>
       <div class="contact-block">
         <div class="contact-block-label">Email</div>
-        <div class="contact-block-value"><a href="mailto:info@b10architecture.be">info@b10architecture.be</a></div>
+        <div class="contact-block-value"><a id="setEmail" href="mailto:info@b10architecture.be">info@b10architecture.be</a></div>
       </div>
       <div class="contact-block">
         <div class="contact-block-label">Téléphone</div>
-        <div class="contact-block-value"><a href="tel:042770660">04 277 06 60</a></div>
+        <div class="contact-block-value"><a id="setTel" href="tel:042770660">04 277 06 60</a></div>
       </div>
       <div class="contact-block">
         <div class="contact-block-label">Réseaux sociaux</div>
@@ -1643,6 +1643,100 @@ async function loadCMSProjects() {
   }
 }
 
+// ── PARAMETRES GLOBAUX DEPUIS LE CMS (content/settings.json) ──
+const SETTINGS_URL =
+  'https://raw.githubusercontent.com/francoisarca1406/b10-architecture/main/content/settings.json';
+
+function setStat(id, value, plus) {
+  const el = document.getElementById(id);
+  if (!el || value === undefined || value === null || value === '') return;
+  el.dataset.count = value;
+  const write = () => { el.innerHTML = value + (plus ? '<span>+</span>' : ''); };
+  write();
+  // L'animation des compteurs dure 1200 ms et peut ecraser la valeur :
+  // on la reaffirme une fois l'animation terminee.
+  setTimeout(write, 1500);
+}
+
+function applySettings(s) {
+  if (!s) return;
+
+  // Sous-titre du hero
+  if (s.hero_sub) {
+    const el = document.getElementById('heroSub');
+    if (el) el.textContent = s.hero_sub;
+  }
+
+  // Image de fond du hero
+  if (s.hero_image) {
+    const el = document.getElementById('heroBg');
+    if (el) el.style.backgroundImage = "url('" + s.hero_image + "')";
+  }
+
+  // Compteurs
+  if (s.stats) {
+    setStat('statProjets', s.stats.projets, true);
+    setStat('statTypologies', s.stats.typologies, false);
+    const f = document.getElementById('statFondation');
+    if (f && s.stats.fondation) { f.textContent = s.stats.fondation; }
+  }
+
+  // Adresse (coupee sur la premiere virgule pour garder deux lignes)
+  if (s.adresse) {
+    const el = document.getElementById('setAdresse');
+    if (el) {
+      const i = s.adresse.indexOf(',');
+      el.textContent = '';
+      if (i > -1) {
+        el.appendChild(document.createTextNode(s.adresse.slice(0, i).trim()));
+        el.appendChild(document.createElement('br'));
+        el.appendChild(document.createTextNode(s.adresse.slice(i + 1).trim()));
+      } else {
+        el.textContent = s.adresse;
+      }
+    }
+  }
+
+  // Email
+  if (s.email) {
+    const el = document.getElementById('setEmail');
+    if (el) { el.textContent = s.email; el.href = 'mailto:' + s.email; }
+  }
+
+  // Telephone
+  if (s.telephone) {
+    const el = document.getElementById('setTel');
+    if (el) {
+      el.textContent = s.telephone;
+      el.href = 'tel:' + String(s.telephone).replace(/[^0-9+]/g, '');
+    }
+  }
+
+  // Reseaux sociaux : mis a jour partout (contact, footer, feed)
+  const socials = [
+    ['facebook.com',  s.facebook],
+    ['instagram.com', s.instagram],
+    ['linkedin.com',  s.linkedin]
+  ];
+  socials.forEach(([domain, url]) => {
+    if (!url) return;
+    document.querySelectorAll('a[href*="' + domain + '"]').forEach(a => { a.href = url; });
+  });
+}
+
+async function loadSettings() {
+  try {
+    const r = await fetch(SETTINGS_URL, { cache: 'no-store' });
+    if (!r.ok) throw new Error('settings.json introuvable (' + r.status + ')');
+    applySettings(await r.json());
+  } catch (e) {
+    // En cas d'echec, le contenu ecrit en dur reste affiche
+    console.log('Settings CMS non charges :', e.message);
+  }
+}
+
+loadSettings();
+
 // ── RENDER IMMEDIATELY with static projects ──
 // Show static content right away, then replace with CMS content if available
 renderProjects([...STATIC_PROJECTS]);
@@ -1653,4 +1747,3 @@ loadCMSProjects();
 </script>
 </body>
 </html>
-
