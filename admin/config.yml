@@ -77,14 +77,12 @@ collections:
       - { label: "Titre", name: "titre", widget: "string" }
       - label: "Catégorie"
         name: "categorie"
-        widget: "select"
-        options:
-          - { label: "Halls industriels", value: "halls-industriels" }
-          - { label: "Bureaux", value: "bureaux" }
-          - { label: "Habitations unifamiliales", value: "habitations-unifamiliales" }
-          - { label: "Ensembles de logements", value: "ensembles-de-logements" }
-          - { label: "Aménagements intérieurs", value: "amenagements-interieurs" }
-          - { label: "Esquisses de projet", value: "esquisses" }
+        widget: "relation"           # liste alimentee par la collection "Catégories"
+        collection: "categories"
+        value_field: "slug"          # ce qui est enregistre dans le projet
+        display_fields: ["titre"]    # ce qui est affiche dans la liste
+        search_fields: ["titre"]
+        hint: "Liste alimentée par la rubrique 📁 Catégories. Pour ajouter un choix, créez-y d'abord la typologie."
       - { label: "Lieu", name: "lieu", widget: "string" }
       - { label: "Année", name: "annee", widget: "string" }
       - { label: "Statut", name: "statut", widget: "select", options: ["Réalisé", "En cours", "Esquisse"], default: "Réalisé" }
@@ -124,12 +122,16 @@ collections:
   - name: "categories"
     label: "📁 Catégories"
     folder: "content/categories"
-    create: false
+    create: true
     slug: "{{slug}}"
     identifier_field: "titre"
     fields:
       - { label: "Titre", name: "titre", widget: "string" }
-      - { label: "Slug URL", name: "slug", widget: "string" }
+      - label: "Slug URL"
+        name: "slug"
+        widget: "string"
+        pattern: ["^[a-z0-9]+(-[a-z0-9]+)*$", "Uniquement des minuscules, chiffres et tirets (ex : halls-industriels)"]
+        hint: "Identifiant technique. Doit correspondre au nom du fichier de la page : categories/<slug>.html"
       - { label: "Description", name: "description", widget: "text", required: false }
       - { label: "Photo de couverture", name: "photo", widget: "image", required: false }
       - { label: "Numéro d'ordre", name: "ordre", widget: "number" }
