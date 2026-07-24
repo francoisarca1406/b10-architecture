@@ -888,7 +888,7 @@ footer {
       <h2 class="section-title">Nos typologies</h2>
     </div>
   </div>
-  <ul class="cat-list sr-stagger">
+  <ul class="cat-list sr-stagger" id="cat-container">
     <li><a class="cat-item" href="#">
       <span class="cat-number">01</span><span class="cat-name">Halls industriels</span>
       <span class="cat-count">3 projets</span><span class="cat-arrow">→</span>
@@ -924,7 +924,7 @@ footer {
       <h2 class="section-title">Notre équipe</h2>
     </div>
   </div>
-  <div class="team-grid sr-stagger">
+  <div class="team-grid sr-stagger" id="team-container">
     <div class="team-card">
       <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80" alt="Architecte associé" style="width:100%;height:100%;object-fit:cover;display:block;">
       <div class="team-card-body"><div class="team-name">Thomas Renard</div><div class="team-role">Architecte associé — Direction</div></div>
@@ -942,7 +942,7 @@ footer {
       <div class="team-card-body"><div class="team-name">Inès Lambert</div><div class="team-role">Chargée de mission — Technique</div></div>
     </div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-top:16px;font-style:italic;">* Noms et photos d'illustration — à remplacer par le contenu définitif.</p>
+  <p id="teamNote" style="font-size:12px;color:var(--muted);margin-top:16px;font-style:italic;">* Noms et photos d'illustration — à remplacer par le contenu définitif.</p>
 </section>
 
 <!-- CONTACT -->
@@ -1484,7 +1484,7 @@ function makeProjectCard(p, featured = false) {
   return `<div class="project-card${featClass} img-reveal" onclick="window.location.href='${href}'" style="cursor:none;">
     <img class="project-img parallax-img" src="${photo}" alt="${p.titre}" loading="eager" onerror="this.style.background='linear-gradient(135deg,#1a1a0e,#2d2510)';this.removeAttribute('src')">
     <div class="project-overlay">
-      <p class="project-cat">${catLabel}</p>
+      <p class="project-cat" data-cat="${p.categorie || ''}">${catLabel}</p>
       <h3 class="project-name" data-href="${href}">${p.titre}</h3>
       <p class="project-loc">${loc}</p>
     </div>
@@ -1551,6 +1551,10 @@ function renderProjects(projects) {
   }
 
   container.innerHTML = html;
+
+  CURRENT_PROJECTS = projects;
+  if (typeof updateCatCounts === 'function') updateCatCounts();
+  if (typeof refreshProjectCatLabels === 'function') refreshProjectCatLabels();
 
   // Re-apply scroll reveal + parallax to new elements
   setTimeout(() => {
@@ -1736,6 +1740,140 @@ async function loadSettings() {
 }
 
 loadSettings();
+
+// ── EQUIPE & CATEGORIES DEPUIS LE CMS ──
+const GITHUB_API_EQUIPE =
+  'https://api.github.com/repos/francoisarca1406/b10-architecture/contents/content/equipe';
+const GITHUB_API_CATEGORIES =
+  'https://api.github.com/repos/francoisarca1406/b10-architecture/contents/content/categories';
+
+let CURRENT_PROJECTS = [];
+
+function escapeHtml(s) {
+  return String(s === undefined || s === null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Le CSS .sr-stagger ne gere que 6 enfants : au-dela, on force l'affichage.
+function revealChildren(container) {
+  if (!container) return;
+  container.classList.add('visible');
+  Array.from(container.children).forEach((el, i) => {
+    if (i >= 6) { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }
+  });
+}
+
+// Charge un dossier CMS, en acceptant .json ET .md (frontmatter)
+async function loadCollection(apiUrl, requiredField) {
+  const res = await fetch(apiUrl, {
+    headers: { 'Accept': 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error('dossier indisponible (' + res.status + ')');
+  const files = await res.json();
+  const entries = files.filter(f =>
+    f.type === 'file' && (f.name.endsWith('.json') || f.name.endsWith('.md'))
+  );
+  if (entries.length === 0) return [];
+
+  const loaded = await Promise.all(entries.map(async f => {
+    try {
+      const r = await fetch(f.download_url);
+      const text = await r.text();
+      const data = f.name.endsWith('.json')
+        ? JSON.parse(text)
+        : parseFrontmatter(text);
+      if (!data || !data[requiredField]) return null;
+      data._file = f.name.replace(/\.(json|md)$/, '');   // n'ecrase pas le champ "slug" du CMS
+      return data;
+    } catch (err) {
+      console.warn('Entree CMS illisible, ignoree :', f.name, err.message);
+      return null;
+    }
+  }));
+
+  return loaded.filter(Boolean)
+               .sort((a, b) => (a.ordre || 99) - (b.ordre || 99));
+}
+
+// ── EQUIPE ──
+async function loadTeam() {
+  try {
+    const members = await loadCollection(GITHUB_API_EQUIPE, 'nom');
+    if (members.length === 0) return;          // rien dans le CMS : on garde le statique
+    const container = document.getElementById('team-container');
+    if (!container) return;
+
+    container.innerHTML = members.map(m =>
+      '<div class="team-card">' +
+        '<img src="' + escapeHtml(m.photo || '') + '" alt="' + escapeHtml(m.nom) + '" ' +
+          'style="width:100%;height:100%;object-fit:cover;display:block;" ' +
+          'onerror="this.style.background=\'linear-gradient(135deg,#1a1a0e,#2d2510)\';this.removeAttribute(\'src\')">' +
+        '<div class="team-card-body">' +
+          '<div class="team-name">' + escapeHtml(m.nom) + '</div>' +
+          '<div class="team-role">' + escapeHtml(m.role || '') + '</div>' +
+        '</div>' +
+      '</div>'
+    ).join('');
+
+    revealChildren(container);
+    const note = document.getElementById('teamNote');
+    if (note) note.style.display = 'none';     // masque la mention "photos d'illustration"
+  } catch (e) {
+    console.log('Equipe CMS non chargee :', e.message);
+  }
+}
+
+// ── CATEGORIES ──
+// Met a jour les libelles des cartes projet avec les titres venus du CMS
+function refreshProjectCatLabels() {
+  document.querySelectorAll('#projects-container .project-cat[data-cat]').forEach(el => {
+    const label = CAT_LABELS[el.dataset.cat];
+    if (label) el.textContent = label;
+  });
+}
+
+function updateCatCounts() {
+  document.querySelectorAll('.cat-count[data-cat]').forEach(el => {
+    const n = CURRENT_PROJECTS.filter(p => p.categorie === el.dataset.cat).length;
+    el.textContent = n === 0 ? '— projets' : (n === 1 ? '1 projet' : n + ' projets');
+  });
+}
+
+async function loadCategories() {
+  try {
+    const cats = await loadCollection(GITHUB_API_CATEGORIES, 'titre');
+    if (cats.length === 0) return;             // rien dans le CMS : on garde le statique
+    const container = document.getElementById('cat-container');
+    if (!container) return;
+
+    container.innerHTML = cats.map((c, i) => {
+      const slug = c.slug || c._file;
+      const num = String(c.ordre || i + 1).padStart(2, '0');
+      return '<li><a class="cat-item" href="categories/' + encodeURIComponent(slug) + '.html">' +
+        '<span class="cat-number">' + num + '</span>' +
+        '<span class="cat-name">' + escapeHtml(c.titre) + '</span>' +
+        '<span class="cat-count" data-cat="' + escapeHtml(slug) + '">— projets</span>' +
+        '<span class="cat-arrow">→</span>' +
+      '</a></li>';
+    }).join('');
+
+    // Les typologies creees dans le CMS deviennent des libelles connus
+    cats.forEach(c => {
+      const slug = c.slug || c._file;
+      if (slug && c.titre) CAT_LABELS[slug] = c.titre;
+    });
+
+    revealChildren(container);
+    updateCatCounts();
+    refreshProjectCatLabels();
+  } catch (e) {
+    console.log('Categories CMS non chargees :', e.message);
+  }
+}
+
+loadTeam();
+loadCategories();
 
 // ── RENDER IMMEDIATELY with static projects ──
 // Show static content right away, then replace with CMS content if available
