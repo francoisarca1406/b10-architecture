@@ -1,6 +1,6 @@
 ---
 nom: Totti
-role: Junior Architecte
+role: Architecte Junior
 photo: /uploads/totti.jpeg
 bio: |-
   Hello,
