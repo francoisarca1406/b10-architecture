@@ -67,7 +67,7 @@
     const pslug = p.slug || (p.titre || '').toLowerCase()
       .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     const loc = escapeHtml((p.lieu || '') + (p.annee ? ' \u00B7 ' + p.annee : ''));
-    return '<a href="../projets/' + encodeURIComponent(pslug) + '.html" class="cat-project-card">' +
+    return '<a href="../projets/projet.html?slug=' + encodeURIComponent(pslug) + '" class="cat-project-card">' +
       '<div class="cat-project-img">' +
         '<img src="' + escapeHtml(p.photo || '') + '" alt="' + escapeHtml(p.titre) + '" ' +
           'loading="eager" onerror="this.style.background=\'linear-gradient(135deg,#1a1a0e,#2d2510)\';this.removeAttribute(\'src\')">' +
