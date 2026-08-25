@@ -1,0 +1,15 @@
+{
+  "annee": "2025",
+  "budget": "100.000",
+  "surface": "2000",
+  "lieu": "Barcelone",
+  "featured": false,
+  "maitre_ouvrage": "Gaudi",
+  "photo": "/uploads/sagrada.jpeg",
+  "titre": "Sagrada Familia",
+  "statut": "Réalisé",
+  "ordre": 2,
+  "categorie": "piscine",
+  "description": "Basilique de Barcelone imaginée par Antoni Gaudí, dont le chantier a débuté en 1882 et se poursuit encore aujourd'hui. Chef-d'œuvre du modernisme catalan, elle mêle formes organiques, symbolisme religieux et tours élancées, et compte parmi les monuments les plus visités d'Europe.",
+  "description_courte": "Fini récemment"
+}
