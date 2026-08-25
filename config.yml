@@ -21,6 +21,15 @@ collections:
           - { label: "Slogan hero", name: "slogan", widget: "string" }
           - { label: "Sous-titre hero", name: "hero_sub", widget: "text" }
           - { label: "Photo hero", name: "hero_image", widget: "image" }
+          - label: "Engagements (les 4 valeurs du bureau)"
+            name: "engagements"
+            widget: "list"
+            max: 4
+            min: 4
+            hint: "Exactement 4 engagements — modifiez les textes, l'ordre est conservé."
+            fields:
+              - { label: "Titre", name: "titre", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
           - { label: "Adresse", name: "adresse", widget: "string" }
           - { label: "Email de contact", name: "email", widget: "string" }
           - { label: "Téléphone", name: "telephone", widget: "string" }
