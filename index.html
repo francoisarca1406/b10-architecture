@@ -914,7 +914,7 @@ footer {
       <p>Nous considérons chaque projet comme unique et proposons spontanément des alternatives écoresponsables incluant des techniques ou des matériaux innovants avec un indice carbone faible.</p>
       <a href="#contact" class="btn btn-outline" style="margin-top:24px;display:inline-block;">Nous contacter</a>
     </div>
-    <div class="about-values sr-stagger sr-right">
+    <div class="about-values sr-stagger sr-right" id="engagements-container">
       <div class="value-card">
         <div class="value-title">Anticonformiste</div>
         <div class="value-desc">Chaque projet est unique. Nous proposons des solutions sur mesure, inattendues et écoresponsables.</div>
@@ -1738,6 +1738,20 @@ function setStat(id, value, plus) {
 
 function applySettings(s) {
   if (!s) return;
+
+  // Engagements (exactement 4 cartes, textes editables via le CMS)
+  if (Array.isArray(s.engagements) && s.engagements.length) {
+    const c = document.getElementById('engagements-container');
+    if (c) {
+      const cards = c.querySelectorAll('.value-card');
+      s.engagements.slice(0, cards.length).forEach((eng, i) => {
+        const t = cards[i].querySelector('.value-title');
+        const d = cards[i].querySelector('.value-desc');
+        if (t && eng.titre) t.textContent = eng.titre;
+        if (d && eng.description) d.textContent = eng.description;
+      });
+    }
+  }
 
   // Sous-titre du hero
   if (s.hero_sub) {
