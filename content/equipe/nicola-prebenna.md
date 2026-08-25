@@ -1,6 +1,6 @@
 ---
 nom: Nicola Prebenna
-role: The Boss
+role: The Italian Boss
 photo: /uploads/nicola.jpeg
 bio: |-
   Hello,
