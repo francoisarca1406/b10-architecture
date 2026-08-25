@@ -1413,7 +1413,7 @@ const STATIC_PROJECTS = [
 
 function makeProjectCard(p, featured = false) {
   const slug = p.slug || p.titre.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  const href = `projets/${slug}.html`;
+  const href = p._cms ? `projets/projet.html?slug=${encodeURIComponent(slug)}` : `projets/${slug}.html`;
   const photo = p.photo || '';
   const catLabel = CAT_LABELS[p.categorie] || p.categorie;
   const loc = `${p.lieu || ''}${p.annee ? ' · ' + p.annee : ''}`;
@@ -1567,6 +1567,7 @@ async function loadCMSProjects() {
           : parseFrontmatter(text);
         if (!data || !data.titre) return null;   // entree vide ou illisible : ignoree
         data.slug = f.name.replace(/\.(json|md)$/, '');
+        data._cms = true;   // provient du CMS -> page detail dynamique
         return data;
       } catch (err) {
         console.warn('Projet CMS illisible, ignore :', f.name, err.message);
