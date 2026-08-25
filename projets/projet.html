@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Projet — B10 Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared.css">
+<style>
+.project-hero { height: 75vh; min-height: 500px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 0 48px 64px; margin-top: 72px; }
+.project-hero-bg { position: absolute; inset: 0; background: #242424 center/cover no-repeat; transform: scale(1.04); transition: transform 8s ease; }
+.project-hero-bg.loaded { transform: scale(1); }
+.project-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(13,13,13,0.1) 0%, rgba(13,13,13,0.85) 100%); }
+.project-hero-content { position: relative; z-index: 1; }
+.project-meta-bar { display: flex; gap: 48px; margin-top: 20px; flex-wrap: wrap; }
+.project-meta-label { font-family: var(--font-label); font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.project-meta-value { font-size: 14px; font-weight: 300; color: var(--white); }
+.gallery { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 3px; }
+.gallery-main { grid-row: span 2; aspect-ratio: 4/3; overflow: hidden; }
+.gallery-thumb { aspect-ratio: 4/3; overflow: hidden; }
+.gallery img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; }
+.gallery-main:hover img, .gallery-thumb:hover img { transform: scale(1.04); }
+.project-body { display: grid; grid-template-columns: 1fr 320px; gap: 64px; align-items: start; }
+.project-description h2 { font-family: var(--font-display); font-size: 36px; font-weight: 300; color: var(--white); margin-bottom: 24px; line-height: 1.15; }
+.project-description p { font-size: 15px; font-weight: 300; color: rgba(242,240,235,0.65); line-height: 1.85; margin-bottom: 16px; }
+.project-specs { background: var(--dark); border: 1px solid var(--border); padding: 32px; position: sticky; top: 96px; }
+.spec-row { padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+.spec-row:last-child { border-bottom: none; }
+.spec-label { font-family: var(--font-label); font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+.spec-value { font-size: 14px; font-weight: 300; color: var(--white); }
+.related-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 3px; }
+.related-card { position: relative; overflow: hidden; aspect-ratio: 3/4; cursor: none; text-decoration: none; display: block; background:#242424; }
+.related-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease; }
+.related-card:hover img { transform: scale(1.05); }
+.related-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,13,13,0.9) 0%, transparent 55%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; }
+.related-cat { font-family: var(--font-label); font-size: 9px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; }
+.related-title { font-family: var(--font-display); font-size: 18px; font-weight: 400; color: var(--white); line-height: 1.2; }
+.related-line { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--gold); transform: scaleX(0); transform-origin: left; transition: transform 0.5s cubic-bezier(0.16,1,0.3,1); }
+.related-card:hover .related-line { transform: scaleX(1); }
+@media (max-width: 900px) {
+  .project-hero { height: 60vh; padding: 0 20px 40px; }
+  .gallery { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .gallery-main { grid-row: span 1; aspect-ratio: 16/9; }
+  .gallery-thumb { display: none; }
+  .project-body { grid-template-columns: 1fr; gap: 40px; }
+  .project-specs { position: static; }
+  .related-grid { grid-template-columns: 1fr 1fr; }
+  .project-meta-bar { gap: 24px; }
+}
+@media (max-width: 480px) {
+  .related-grid { grid-template-columns: 1fr; }
+  .project-hero { height: 55vh; }
+}
+</style>
+</head>
+<body>
+<div id="cursor"></div><div id="cursor-ring"></div>
+<nav id="navbar">
+  <a href="../index.html" class="nav-logo"><span class="nav-logo-text"><span class="gold">B</span>10 Architecture &amp; Design</span></a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="../index.html#bureau">Bureau</a></li>
+    <li><a href="../index.html#projets" class="active">Projets</a></li>
+    <li><a href="../index.html#equipe">Équipe</a></li>
+    <li><a href="../index.html#contact" class="nav-cta">Contact</a></li>
+  </ul>
+  <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="project-hero">
+  <div class="project-hero-bg" id="heroBg"></div>
+  <div class="project-hero-overlay"></div>
+  <div class="project-hero-content sr visible">
+    <a href="../index.html#projets" class="back-link">Tous les projets</a>
+    <div class="page-subtitle" id="mCat"></div>
+    <h1 class="page-title" id="mTitle">Chargement…</h1>
+    <div class="project-meta-bar" id="mMeta"></div>
+  </div>
+</div>
+
+<div class="section"><div class="gallery sr visible" id="mGallery"></div></div>
+
+<div class="section" style="padding-top:0;">
+  <div class="project-body">
+    <div class="project-description sr-left visible">
+      <div class="section-label">Description du projet</div>
+      <h2 id="mLead"></h2>
+      <div id="mDesc"></div>
+      <div style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap;">
+        <a id="mCatLink" href="#" class="btn btn-ghost">Voir la catégorie</a>
+        <a href="../index.html#contact" class="btn btn-primary">Nous contacter</a>
+      </div>
+    </div>
+    <div class="project-specs sr visible">
+      <div class="section-label" style="margin-bottom:20px;">Fiche technique</div>
+      <div id="mSpecs"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="mRelatedWrap" style="background:var(--dark);border-top:1px solid var(--border);display:none;">
+  <div class="section-label">À découvrir</div>
+  <h2 class="section-title">Projets similaires</h2>
+  <div class="related-grid sr-stagger visible" id="mRelated"></div>
+</div>
+
+<footer>
+  <span class="footer-copy">© 2026 B10 Architecture &amp; Design</span>
+  <ul class="footer-links"><li><a href="#">RGPD</a></li><li><a href="#">Vie privée</a></li></ul>
+  <div class="footer-social"><a href="#">FB</a><a href="#">IG</a><a href="#">LI</a></div>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+let cx=0,cy=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;cursor.style.left=cx+'px';cursor.style.top=cy+'px';});
+function animRing(){rx+=(cx-rx)*0.12;ry+=(cy-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+function bindHover(){document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));});}
+bindHover();
+const toggle=document.getElementById('navToggle'),nav=document.getElementById('navLinks');
+toggle.addEventListener('click',()=>{nav.classList.toggle('open');const s=toggle.querySelectorAll('span');if(nav.classList.contains('open')){s[0].style.transform='translateY(6px) rotate(45deg)';s[1].style.opacity='0';s[2].style.transform='translateY(-6px) rotate(-45deg)';}else{s.forEach(x=>{x.style.transform='';x.style.opacity='';})}});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nav.classList.remove('open')));
+window.addEventListener('scroll',()=>document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>40));
+</script>
+
+<script>
+(function(){
+  const OWNER='francoisarca1406/b10-architecture';
+  const RAW='https://raw.githubusercontent.com/'+OWNER+'/main/content/projets/';
+  const API='https://api.github.com/repos/'+OWNER+'/contents/content/projets';
+  const slug=new URLSearchParams(location.search).get('slug');
+
+  const CAT_LABELS={'halls-industriels':'Halls industriels','bureaux':'Bureaux','habitations-unifamiliales':'Habitations unifamiliales','ensembles-de-logements':'Ensembles de logements','amenagements-interieurs':'Aménagements intérieurs','esquisses':'Esquisses de projet'};
+
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+  function md(text){
+    let t=esc(text||'');
+    t=t.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/\*([^*]+)\*/g,'<em>$1</em>');
+    return t.split(/\n\s*\n/).map(p=>'<p>'+p.replace(/\n/g,'<br>')+'</p>').join('');
+  }
+
+  function parseFrontmatter(text){
+    const m=text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    if(!m) return null;
+    const data={};
+    m[1].split(/\r?\n/).forEach(line=>{
+      if(!line.trim()||line.trim().startsWith('#')) return;
+      if(/^\s/.test(line)) return;
+      const i=line.indexOf(':'); if(i===-1) return;
+      const key=line.slice(0,i).trim(); let val=line.slice(i+1).trim();
+      if(!val||val==='[]') return;
+      if((val.startsWith('"')&&val.endsWith('"'))||(val.startsWith("'")&&val.endsWith("'"))) val=val.slice(1,-1);
+      else if(val==='true') val=true; else if(val==='false') val=false;
+      else if(/^-?\d+$/.test(val)) val=Number(val);
+      data[key]=val;
+    });
+    return data;
+  }
+
+  function notFound(){
+    document.getElementById('mTitle').textContent='Projet introuvable';
+    document.getElementById('mCat').textContent='';
+    document.getElementById('mLead').textContent='';
+    document.getElementById('mDesc').innerHTML='<p>Ce projet n\u2019existe pas ou n\u2019est plus publié. <a href="../index.html#projets" style="color:var(--gold);">Retour aux projets</a>.</p>';
+    document.title='Projet — B10 Architecture';
+  }
+
+  async function fetchProject(s){
+    for(const ext of ['.json','.md']){
+      try{
+        const r=await fetch(RAW+encodeURIComponent(s)+ext,{cache:'no-store'});
+        if(r.ok){const t=await r.text(); return ext==='.json'?JSON.parse(t):parseFrontmatter(t);}
+      }catch(e){}
+    }
+    return null;
+  }
+
+  function metaItem(label,val){return val?'<div class="project-meta-item"><div class="project-meta-label">'+esc(label)+'</div><div class="project-meta-value">'+esc(val)+'</div></div>':'';}
+  function specRow(label,val){return val?'<div class="spec-row"><div class="spec-label">'+esc(label)+'</div><div class="spec-value">'+esc(val)+'</div></div>':'';}
+
+  async function loadProject(){
+    if(!slug){notFound();return;}
+    const p=await fetchProject(slug);
+    if(!p||!p.titre){notFound();return;}
+
+    const catLabel=CAT_LABELS[p.categorie]||p.categorie||'';
+    document.title=p.titre+' — B10 Architecture';
+    if(p.photo) document.getElementById('heroBg').style.backgroundImage="url('"+p.photo+"')";
+    document.getElementById('heroBg').classList.add('loaded');
+    document.getElementById('mCat').textContent=catLabel;
+    document.getElementById('mTitle').textContent=p.titre;
+
+    document.getElementById('mMeta').innerHTML=
+      metaItem('Lieu',p.lieu)+metaItem('Année',p.annee)+
+      metaItem('Surface',p.surface?p.surface+' m²':'')+metaItem('Statut',p.statut);
+
+    // Galerie : liste {url} si dispo (format JSON), sinon la photo principale
+    const g=document.getElementById('mGallery');
+    let imgs=[];
+    if(Array.isArray(p.galerie)&&p.galerie.length) imgs=p.galerie.map(x=>x&&x.url).filter(Boolean);
+    if(p.photo) imgs.unshift(p.photo);
+    imgs=imgs.filter((v,i,a)=>v&&a.indexOf(v)===i).slice(0,3);
+    if(imgs.length){
+      let h='<div class="gallery-main"><img src="'+esc(imgs[0])+'" alt="'+esc(p.titre)+'" loading="eager" onerror="this.style.background=\'linear-gradient(135deg,#1a1a0e,#2d2510)\';this.removeAttribute(\'src\')"></div>';
+      for(let i=1;i<imgs.length;i++) h+='<div class="gallery-thumb"><img src="'+esc(imgs[i])+'" alt="Vue '+(i+1)+'" loading="eager"></div>';
+      g.innerHTML=h;
+    } else { g.style.display='none'; }
+
+    document.getElementById('mLead').textContent=p.description_courte||p.titre;
+    document.getElementById('mDesc').innerHTML=p.description?md(p.description):'';
+
+    document.getElementById('mSpecs').innerHTML=
+      specRow("Maître d'ouvrage",p.maitre_ouvrage)+specRow('Surface',p.surface?p.surface+' m²':'')+
+      specRow('Budget',p.budget)+specRow('Localisation',p.lieu)+specRow('Année',p.annee)+
+      specRow('Statut',p.statut)+specRow('Typologie',catLabel);
+
+    const cl=document.getElementById('mCatLink');
+    if(p.categorie){cl.href='../categories/'+encodeURIComponent(p.categorie)+'.html';cl.textContent='Voir : '+catLabel;}
+    else cl.style.display='none';
+
+    bindHover();
+    loadRelated(p);
+  }
+
+  async function loadRelated(current){
+    try{
+      const res=await fetch(API,{headers:{'Accept':'application/vnd.github.v3+json'}});
+      if(!res.ok) return;
+      const files=(await res.json()).filter(f=>f.type==='file'&&(f.name.endsWith('.md')||f.name.endsWith('.json')));
+      const all=(await Promise.all(files.map(async f=>{
+        try{const t=await (await fetch(f.download_url)).text();
+          const d=f.name.endsWith('.json')?JSON.parse(t):parseFrontmatter(t);
+          if(!d||!d.titre) return null; d._file=f.name.replace(/\.(md|json)$/,''); return d;
+        }catch(e){return null;}
+      }))).filter(Boolean);
+      const rel=all.filter(x=>x._file!==slug&&x.categorie===current.categorie).slice(0,3);
+      if(rel.length===0) return;
+      document.getElementById('mRelated').innerHTML=rel.map(r=>
+        '<a href="projet.html?slug='+encodeURIComponent(r._file)+'" class="related-card">'+
+          '<img src="'+esc(r.photo||'')+'" alt="'+esc(r.titre)+'" loading="eager" onerror="this.style.background=\'linear-gradient(135deg,#1a1a0e,#2d2510)\';this.removeAttribute(\'src\')">'+
+          '<div class="related-overlay"><div class="related-cat">'+esc(CAT_LABELS[r.categorie]||r.categorie||'')+'</div>'+
+          '<div class="related-title">'+esc(r.titre)+'</div></div><div class="related-line"></div>'+
+        '</a>'
+      ).join('');
+      document.getElementById('mRelatedWrap').style.display='';
+      bindHover();
+    }catch(e){}
+  }
+
+  loadProject();
+})();
+</script>
+</body>
+</html>
