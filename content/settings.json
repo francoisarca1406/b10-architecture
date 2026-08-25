@@ -1,11 +1,12 @@
 {
-  "nom": "B10",
-  "slogan": "Slogan à compléter",
-  "hero_sub": "sous-titre si besoin",
-  "hero_image": "/uploads/istockphoto-1063723682-612x612.jpg",
-  "adresse": "Chemin de Richelle 4, 4600 Visé",
-  "email": "info@b10.com",
   "telephone": "0493749414",
+  "nom": "B10",
+  "adresse": "Chemin de Richelle 4, 4600 Visé",
+  "instagram": "https://www.instagram.com/b10architecture/",
+  "hero_image": "/uploads/istockphoto-1063723682-612x612.jpg",
+  "hero_sub": "sous-titre si besoin",
+  "email": "info@b10.com",
+  "slogan": "Slogan à compléter",
   "stats": {
     "projets": 50,
     "typologies": 2,
