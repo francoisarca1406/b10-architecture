@@ -1,5 +1,5 @@
 ---
-titre: Cat 1
-slug: cat1
+titre: Bureaux
+slug: bureaux
 ordre: 1
 ---
