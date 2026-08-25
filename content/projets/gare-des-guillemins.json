@@ -1,0 +1,14 @@
+{
+  "annee": "2010",
+  "budget": "1.000.000",
+  "surface": "10.000",
+  "lieu": "Liège",
+  "featured": false,
+  "maitre_ouvrage": "Santiago Calatrava",
+  "photo": "/uploads/guillemins.jpeg",
+  "titre": "Gare des Guillemins",
+  "statut": "Réalisé",
+  "ordre": 1,
+  "categorie": "residentiel",
+  "description": "Conçue par Santiago Calatrava et inaugurée en 2009, cette gare emblématique de Liège se distingue par sa vaste voûte de verre, d'acier et de béton blanc, sans façade principale. Sa structure aérienne de 200 mètres de long en fait une prouesse d'architecture contemporaine."
+}
