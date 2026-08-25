@@ -3,7 +3,25 @@
   "nom": "B10",
   "adresse": "Chemin de Richelle 4, 4600 Visé",
   "instagram": "https://www.instagram.com/b10architecture/",
-  "hero_image": "/uploads/istockphoto-1063723682-612x612.jpg",
+  "engagements": [
+    {
+      "titre": "Ecoute",
+      "description": "Vos priorités guident les nôtres. Chaque remarque devient une occasion d'affiner le projet et de le rapprocher de ce que vous attendez."
+    },
+    {
+      "titre": "Transparent",
+      "description": "Devis clairs, choix expliqués, délais tenus. Vous gardez la maîtrise de votre projet et de son budget à tout moment."
+    },
+    {
+      "titre": "Anticonformiste",
+      "description": "Nous refusons les solutions toutes faites. Chaque projet appelle une réponse unique, inventive et écoresponsable, pensée pour votre usage réel."
+    },
+    {
+      "titre": "Solidaire",
+      "description": "Nous avançons avec vous, du premier croquis à la livraison, en cherchant à chaque étape la meilleure décision commune."
+    }
+  ],
+  "hero_image": "/uploads/museu-do-louvre.png",
   "hero_sub": "sous-titre si besoin",
   "email": "info@b10.com",
   "slogan": "Slogan à compléter",
