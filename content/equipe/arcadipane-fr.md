@@ -1,7 +1,11 @@
 ---
-nom: Arcadipane FR
-role: Admin
-photo: /uploads/istockphoto-1063723682-612x612.jpg
-bio: hello hello
-ordre: 1
+nom: Totti
+role: Junior Architecte
+photo: /uploads/totti.jpeg
+bio: |-
+  Hello,
+
+  Je suis nouveau mais motivé.
+email: fra@hotmail.fr
+ordre: 3
 ---
