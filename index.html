@@ -645,80 +645,6 @@ footer {
 /* ── HORIZONTAL RULE ── */
 .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
 
-/* ── INSTAGRAM ── */
-.instagram { background: var(--dark); border-top: 1px solid var(--border); }
-.instagram-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 3px;
-}
-.instagram-item {
-  position: relative;
-  aspect-ratio: 1 / 1;
-  overflow: hidden;
-  background: var(--surface);
-  cursor: none; display: block;
-}
-.instagram-item img {
-  width: 100%; height: 100%;
-  object-fit: cover; display: block;
-  transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
-}
-.instagram-item:hover img { transform: scale(1.08); }
-.instagram-item-overlay {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(245,166,35,0.55);
-  opacity: 0; transition: opacity 0.3s ease;
-}
-.instagram-item:hover .instagram-item-overlay { opacity: 1; }
-.instagram-item-icon {
-  width: 26px; height: 26px;
-  color: var(--black);
-  transform: translateY(6px);
-  transition: transform 0.3s ease;
-}
-.instagram-item:hover .instagram-item-icon { transform: translateY(0); }
-
-.instagram-cta-wrap {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 24px;
-  margin-top: 40px; padding-top: 32px;
-  border-top: 1px solid var(--border);
-}
-.instagram-handle { display: flex; align-items: center; gap: 16px; }
-.instagram-avatar {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: var(--gold); color: var(--black);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 24px; font-weight: 500;
-  flex-shrink: 0;
-}
-.instagram-handle-text { display: flex; flex-direction: column; gap: 2px; }
-.instagram-handle-name {
-  font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--white);
-}
-.instagram-handle-sub {
-  font-family: var(--font-label); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
-}
-.instagram-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  font-family: var(--font-label); font-size: 11px; font-weight: 500;
-  letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--black); background: var(--gold);
-  padding: 13px 26px; text-decoration: none; cursor: none;
-  transition: opacity 0.2s, letter-spacing 0.3s;
-}
-.instagram-btn:hover { opacity: 0.88; letter-spacing: 0.2em; }
-.instagram-btn svg { width: 18px; height: 18px; }
-
-@media (max-width: 900px) { .instagram-grid { grid-template-columns: repeat(3, 1fr); } }
-@media (max-width: 480px) {
-  .instagram-grid { grid-template-columns: repeat(2, 1fr); }
-  .instagram-cta-wrap { flex-direction: column; align-items: flex-start; }
-}
-
 /* ── RESPONSIVE : tablette ── */
 @media (max-width: 900px) {
   body { cursor: auto; }
@@ -1079,69 +1005,6 @@ footer {
         <button type="submit" class="form-submit" id="submitBtn">Envoyer le message</button>
       </form>
     </div>
-  </div>
-</section>
-
-<!-- INSTAGRAM -->
-<section class="instagram section">
-  <div class="section-header sr">
-    <div>
-      <p class="section-label">Suivez-nous</p>
-      <h2 class="section-title">Instagram</h2>
-    </div>
-  </div>
-
-  <div class="instagram-grid sr-stagger">
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-item">
-      <img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=400&q=80" alt="B10 Architecture Instagram" loading="eager">
-      <div class="instagram-item-overlay">
-        <svg class="instagram-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      </div>
-    </a>
-  </div>
-
-  <div class="instagram-cta-wrap sr">
-    <div class="instagram-handle">
-      <div class="instagram-avatar">B</div>
-      <div class="instagram-handle-text">
-        <span class="instagram-handle-name">@b10architecture</span>
-        <span class="instagram-handle-sub">Suivez nos réalisations en temps réel</span>
-      </div>
-    </div>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" class="instagram-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-      Voir le profil Instagram
-    </a>
   </div>
 </section>
 
@@ -1893,7 +1756,7 @@ async function loadTeam() {
     if (!container) return;
 
     container.innerHTML = members.map(m =>
-      '<div class="team-card">' +
+      '<a class="team-card" href="equipe/membre.html?slug=' + encodeURIComponent(m._file || '') + '" style="text-decoration:none;color:inherit;">' +
         '<img src="' + escapeHtml(m.photo || '') + '" alt="' + escapeHtml(m.nom) + '" ' +
           'style="width:100%;height:100%;object-fit:cover;display:block;" ' +
           'onerror="this.style.background=\'linear-gradient(135deg,#1a1a0e,#2d2510)\';this.removeAttribute(\'src\')">' +
@@ -1901,7 +1764,7 @@ async function loadTeam() {
           '<div class="team-name">' + escapeHtml(m.nom) + '</div>' +
           '<div class="team-role">' + escapeHtml(m.role || '') + '</div>' +
         '</div>' +
-      '</div>'
+      '</a>'
     ).join('');
 
     revealChildren(container);
