@@ -1,0 +1,14 @@
+{
+  "annee": "1680",
+  "budget": "500.000",
+  "surface": "1000",
+  "lieu": "Pise",
+  "featured": false,
+  "maitre_ouvrage": "Romains",
+  "photo": "/uploads/pise.jpeg",
+  "titre": "Tour de Pise",
+  "statut": "Réalisé",
+  "ordre": 99,
+  "categorie": "bureaux",
+  "description": "Campanile de la cathédrale de Pise, édifié à partir de 1173, ce clocher de marbre blanc est mondialement connu pour son inclinaison, due à un affaissement du sol dès le début de sa construction. Huit étages d'arcades en font un chef-d'œuvre de l'art roman pisan."
+}
