@@ -20,6 +20,7 @@ collections:
           - { label: "Nom du cabinet", name: "nom", widget: "string", default: "B10 Architecture & Design" }
           - { label: "Slogan hero", name: "slogan", widget: "string" }
           - { label: "Sous-titre hero", name: "hero_sub", widget: "text" }
+          - { label: "Texte de présentation (à côté des engagements)", name: "about_text", widget: "text", required: false, hint: "Séparez les paragraphes par une ligne vide." }
           - { label: "Photo hero", name: "hero_image", widget: "image" }
           - label: "Engagements (les 4 valeurs du bureau)"
             name: "engagements"
