@@ -616,11 +616,12 @@ footer {
 .footer-links a:hover { color: var(--white); }
 .footer-social { display: flex; gap: 16px; }
 .footer-social a {
-  font-family: var(--font-label); font-size: 10px; font-weight: 500;
-  letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--muted); text-decoration: none; transition: color 0.2s;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 50%;
+  color: var(--muted); text-decoration: none; transition: color 0.25s, border-color 0.25s, background 0.25s;
 }
-.footer-social a:hover { color: var(--gold); }
+.footer-social a:hover { color: var(--gold); border-color: var(--gold); background: rgba(245,166,35,0.05); }
+.footer-social a svg { width: 16px; height: 16px; }
 
 /* ── SCROLL REVEAL BASE ── */
 .sr {
@@ -644,6 +645,30 @@ footer {
 
 /* ── HORIZONTAL RULE ── */
 .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+/* ── MESSAGE DE CONFIRMATION FORMULAIRE ── */
+.form-success {
+  display: none;
+  margin-top: 24px;
+  padding: 24px 28px;
+  border: 1px solid var(--gold);
+  background: rgba(245,166,35,0.06);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--white);
+}
+.form-success.visible { display: block; }
+.form-success strong {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 6px;
+}
 
 /* ── RESPONSIVE : tablette ── */
 @media (max-width: 900px) {
@@ -835,9 +860,11 @@ footer {
       <div class="img-reveal" style="margin-bottom:32px;height:260px;border-radius:2px;overflow:hidden;">
         <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=900&q=80" alt="Bureau B10" style="width:100%;height:100%;object-fit:cover;display:block;">
       </div>
+      <div id="aboutText">
       <p>Depuis le 1er juillet 2017, B10 Architecture &amp; Design sprl s'est constituée pour se consacrer exclusivement aux marchés privés. Profitant de cette nouvelle impulsion, B10 s'investit dans des projets à plus grande échelle, plus ambitieux et innovants.</p>
       <p>Tous nos projets sont développés en englobant nos valeurs fondamentales : l'anticonformisme, l'écoute, la transparence et la solidarité.</p>
       <p>Nous considérons chaque projet comme unique et proposons spontanément des alternatives écoresponsables incluant des techniques ou des matériaux innovants avec un indice carbone faible.</p>
+      </div>
       <a href="#contact" class="btn btn-outline" style="margin-top:24px;display:inline-block;">Nous contacter</a>
     </div>
     <div class="about-values sr-stagger sr-right" id="engagements-container">
@@ -1017,9 +1044,9 @@ footer {
     <li><a href="#">Vie privée</a></li>
   </ul>
   <div class="footer-social">
-    <a href="https://www.facebook.com/b10architecture/" target="_blank">FB</a>
-    <a href="https://www.instagram.com/b10architecture/" target="_blank">IG</a>
-    <a href="https://www.linkedin.com/company/b10-architecture-design/" target="_blank">LI</a>
+    <a href="https://www.facebook.com/b10architecture/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/></svg></a>
+    <a href="https://www.instagram.com/b10architecture/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5.5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+    <a href="https://www.linkedin.com/company/b10-architecture-design/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4v14h-4V8zm7 0h3.83v1.9h.05c.53-.98 1.83-2.02 3.77-2.02 4.03 0 4.78 2.65 4.78 6.1V22h-4v-6.2c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.37 1.6-2.37 3.27V22h-4V8z"/></svg></a>
   </div>
 </footer>
 
@@ -1602,6 +1629,12 @@ function setStat(id, value, plus) {
 
 function applySettings(s) {
   if (!s) return;
+
+  // Texte de présentation (à côté des engagements)
+  if (s.about_text) {
+    const at = document.getElementById('aboutText');
+    if (at) at.innerHTML = String(s.about_text).split(/\n\s*\n/).map(function(p){return '<p>' + escapeHtml(p).replace(/\n/g,'<br>') + '</p>';}).join('');
+  }
 
   // Engagements (exactement 4 cartes, textes editables via le CMS)
   if (Array.isArray(s.engagements) && s.engagements.length) {
