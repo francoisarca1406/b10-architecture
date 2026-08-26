@@ -1802,7 +1802,7 @@ async function loadCategories() {
     container.innerHTML = cats.map((c, i) => {
       const slug = c.slug || c._file;
       const num = String(c.ordre || i + 1).padStart(2, '0');
-      return '<li><a class="cat-item" href="categories/' + encodeURIComponent(slug) + '.html">' +
+      return '<li><a class="cat-item" href="categories/categorie.html?slug=' + encodeURIComponent(slug) + '">' +
         '<span class="cat-number">' + num + '</span>' +
         '<span class="cat-name">' + escapeHtml(c.titre) + '</span>' +
         '<span class="cat-count" data-cat="' + escapeHtml(slug) + '">— projets</span>' +
